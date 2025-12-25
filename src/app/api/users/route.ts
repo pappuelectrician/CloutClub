@@ -1,54 +1,77 @@
 import { NextResponse } from 'next/server';
-import fs from 'fs/promises';
-import path from 'path';
-
-const usersPath = path.join(process.cwd(), 'data/users.json');
-
-async function getUsers() {
-    try {
-        const data = await fs.readFile(usersPath, 'utf-8');
-        return JSON.parse(data);
-    } catch {
-        return [];
-    }
-}
+import { supabase } from '@/lib/supabase';
 
 export async function GET(request: Request) {
     const { searchParams } = new URL(request.url);
     const email = searchParams.get('email');
-    const users = await getUsers();
 
-    if (email) {
-        const user = users.find((u: any) => u.email === email);
-        return NextResponse.json(user || null);
+    try {
+        if (email) {
+            const { data: user, error } = await supabase
+                .from('users')
+                .select('*')
+                .eq('email', email)
+                .single();
+
+            if (error) {
+                console.error('Supabase error fetching user by email:', error);
+                return NextResponse.json(null);
+            }
+            return NextResponse.json(user);
+        }
+
+        const { data: users, error } = await supabase
+            .from('users')
+            .select('*');
+
+        if (error) {
+            console.error('Supabase error fetching users:', error);
+            return NextResponse.json([]);
+        }
+
+        return NextResponse.json(users);
+    } catch (error) {
+        console.error('Error in users GET API:', error);
+        return NextResponse.json({ error: 'Failed to fetch' }, { status: 500 });
     }
-
-    return NextResponse.json(users);
 }
 
 export async function POST(request: Request) {
     try {
         const data = await request.json();
-        const users = await getUsers();
 
         if (data.action === 'toggleElite') {
-            const updatedUsers = users.map((u: any) =>
-                u.email === data.email ? { ...u, isElite: !u.isElite, level: !u.isElite ? 'ELITE MEMBER' : 'BASIC MEMBER' } : u
-            );
-            await fs.writeFile(usersPath, JSON.stringify(updatedUsers, null, 2));
+            const { data: user, error: fetchError } = await supabase
+                .from('users')
+                .select('isElite')
+                .eq('email', data.email)
+                .single();
+
+            if (fetchError) throw fetchError;
+
+            const isElite = !user.isElite;
+            const { error } = await supabase
+                .from('users')
+                .update({ isElite, level: isElite ? 'ELITE MEMBER' : 'BASIC MEMBER' })
+                .eq('email', data.email);
+
+            if (error) throw error;
             return NextResponse.json({ success: true });
         }
 
         if (data.action === 'saveShipping') {
-            const updatedUsers = users.map((u: any) =>
-                u.email === data.email ? { ...u, shippingInfo: data.shippingInfo } : u
-            );
-            await fs.writeFile(usersPath, JSON.stringify(updatedUsers, null, 2));
+            const { error } = await supabase
+                .from('users')
+                .update({ shippingInfo: data.shippingInfo })
+                .eq('email', data.email);
+
+            if (error) throw error;
             return NextResponse.json({ success: true });
         }
 
         return NextResponse.json({ error: 'Invalid action' }, { status: 400 });
     } catch (error) {
+        console.error('Error in users POST API:', error);
         return NextResponse.json({ error: 'Failed to process request' }, { status: 500 });
     }
 }
