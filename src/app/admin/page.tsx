@@ -151,16 +151,18 @@ export default function AdminPage() {
             if (data.url) {
                 if (type === 'product') {
                     if (editingProduct) {
-                        setEditingProduct({ ...editingProduct, images: [data.url] });
+                        setEditingProduct((prev: any) => prev ? { ...prev, images: [data.url] } : null);
                     } else {
-                        setNewProduct({ ...newProduct, imageUrl: data.url });
+                        setNewProduct((prev: any) => ({ ...prev, imageUrl: data.url }));
                     }
                 } else if (type === 'config') {
-                    setConfig({ ...config, hero: { ...config.hero, image: data.url } });
+                    setConfig((prev: any) => ({ ...prev, hero: { ...prev.hero, image: data.url } }));
                 } else if (type === 'category') {
-                    const newCats = [...config.categories];
-                    newCats[extra].image = data.url;
-                    setConfig({ ...config, categories: newCats });
+                    setConfig((prev: any) => {
+                        const newCats = [...prev.categories];
+                        newCats[extra].image = data.url;
+                        return { ...prev, categories: newCats };
+                    });
                 }
                 showToast('Upload successful');
             } else {

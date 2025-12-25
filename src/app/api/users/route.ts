@@ -59,6 +59,30 @@ export async function POST(request: Request) {
             return NextResponse.json({ success: true });
         }
 
+        // Handle Signup / Create User
+        if (!data.action && data.email) {
+            // Check if user exists
+            const { data: existing } = await supabase.from('users').select('email').eq('email', data.email).single();
+            if (existing) {
+                return NextResponse.json({ error: 'User already exists' }, { status: 400 });
+            }
+
+            const newUser = {
+                id: `USER-${Date.now()}`,
+                email: data.email,
+                name: data.name,
+                level: 'BASIC MEMBER',
+                isElite: false,
+                role: 'user',
+                createdAt: new Date().toISOString()
+            };
+
+            const { error } = await supabase.from('users').insert(newUser);
+            if (error) throw error;
+
+            return NextResponse.json({ success: true, user: newUser });
+        }
+
         if (data.action === 'saveShipping') {
             const { error } = await supabase
                 .from('users')

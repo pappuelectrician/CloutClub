@@ -85,48 +85,24 @@
     max-width: 650px;
     text-align: center;
     background: #0a0a0a;
-    /* Solid dark background to hide anything behind */
-    backdrop-filter: blur(40px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
     z-index: 1;
-    /* Keep content above border */
 }
 
-.restrictionBox::before {
-    content: '';
-    position: absolute;
-    inset: -2px;
-    /* Extend outward to form the border */
-    background: linear-gradient(45deg, #ff0000, #ff7300, #fffb00, #48ff00, #00ffd5, #002bff, #7a00ff, #ff00c8, #ff0000);
-    background-size: 400%;
-    z-index: -1;
-    /* Place behind the solid background */
-    border-radius: 42px;
-    animation: rgb-ring 10s linear infinite;
-}
-
-@keyframes rgb-ring {
-    0% {
-        background-position: 0% 0%;
-    }
-
-    100% {
-        background-position: 400% 0%;
-    }
-}
+/* Removed rainbow pseudo-element */
 
 .restrictionBox h2 {
     font-size: 3rem;
     font-weight: 900;
     margin-bottom: 20px;
-    color: #ff3333;
+    color: #fff;
     letter-spacing: -0.02em;
-    text-shadow: 0 0 20px rgba(255, 51, 51, 0.3);
 }
 
 .restrictionBox p {
     font-size: 1.1rem;
     line-height: 1.6;
-    opacity: 0.8;
+    opacity: 0.6;
 }
 
 .contactBtn {

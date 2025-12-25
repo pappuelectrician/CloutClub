@@ -19,14 +19,44 @@ export default function LoginPage() {
                 <h1 className={styles.title}>WELCOME <span className="text-gradient">BACK</span></h1>
                 <p className={styles.subtitle}>Enter your credentials to access your clout.</p>
 
-                <form className={styles.form} onSubmit={(e) => e.preventDefault()}>
+                <form className={styles.form} onSubmit={async (e) => {
+                    e.preventDefault();
+                    try {
+                        // In a real app we would check password, but here we just check existence
+                        const res = await fetch(`/api/users?email=${formData.email}`);
+                        const user = await res.json();
+
+                        if (user) {
+                            localStorage.setItem('user_email', user.email);
+                            localStorage.setItem('user_name', user.name || 'User'); // Fallback if name missing
+                            window.location.href = '/account';
+                        } else {
+                            alert('User not found. Please sign up.');
+                        }
+                    } catch (err) {
+                        console.error(err);
+                        alert('Login failed');
+                    }
+                }}>
                     <div className={styles.inputWrapper}>
                         <Mail size={18} className={styles.icon} />
-                        <input type="email" placeholder="EMAIL ADDRESS" required />
+                        <input
+                            type="email"
+                            placeholder="EMAIL ADDRESS"
+                            required
+                            value={formData.email}
+                            onChange={e => setFormData({ ...formData, email: e.target.value })}
+                        />
                     </div>
                     <div className={styles.inputWrapper}>
                         <Lock size={18} className={styles.icon} />
-                        <input type="password" placeholder="PASSWORD" required />
+                        <input
+                            type="password"
+                            placeholder="PASSWORD"
+                            required
+                            value={formData.password}
+                            onChange={e => setFormData({ ...formData, password: e.target.value })}
+                        />
                     </div>
                     <button type="submit" className={styles.submitBtn}>
                         LOGIN <ArrowRight size={20} />

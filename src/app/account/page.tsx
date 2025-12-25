@@ -10,10 +10,10 @@ export default function AccountPage() {
     const [activeTab, setActiveTab] = useState('orders');
     const [selectedOrder, setSelectedOrder] = useState<any>(null);
     const [user, setUser] = useState({
-        name: 'Yashu D.',
-        email: 'yashu@cloutclub.com',
-        level: 'ELITE MEMBER',
-        joined: 'Dec 2025'
+        name: '',
+        email: '',
+        level: '',
+        joined: ''
     });
     const [loading, setLoading] = useState(true);
     const [saved, setSaved] = useState(false);
@@ -31,15 +31,22 @@ export default function AccountPage() {
 
     const fetchUserData = async () => {
         try {
-            const email = 'yashu@cloutclub.com';
+            const email = localStorage.getItem('user_email');
+
+            if (!email) {
+                // Redirect if no user found
+                // window.location.href = '/login'; 
+                return;
+            }
+
             const res = await fetch(`/api/users?email=${email}`);
             const data = await res.json();
             if (data) {
                 setUser({
                     name: data.name,
                     email: data.email,
-                    level: data.level,
-                    joined: 'Dec 2025'
+                    level: data.level || 'MEMBER',
+                    joined: new Date(data.createdAt).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })
                 });
             }
         } catch (err) {
