@@ -78,13 +78,13 @@ export default function AdminPage() {
                 fetch('/api/orders'),
                 fetch('/api/users')
             ]);
-            const prodData = await prodRes.json();
-            const orderData = await orderRes.json();
-            const userData = await userRes.json();
+            const prodData = prodRes.ok ? await prodRes.json() : [];
+            const orderData = orderRes.ok ? await orderRes.json() : [];
+            const userData = userRes.ok ? await userRes.json() : [];
 
-            setProducts(prodData || []);
-            setOrders(orderData || []);
-            setUsers(userData || []);
+            setProducts(Array.isArray(prodData) ? prodData : []);
+            setOrders(Array.isArray(orderData) ? orderData : []);
+            setUsers(Array.isArray(userData) ? userData : []);
 
             const totalSales = (orderData || []).reduce((acc: number, o: any) => acc + (o.total || 0), 0);
             const totalStock = (prodData || []).reduce((acc: number, p: any) => acc + (p.stock || 0), 0);
@@ -117,7 +117,7 @@ export default function AdminPage() {
         try {
             const res = await fetch('/api/support');
             const data = await res.json();
-            setSupportRequests(data || []);
+            setSupportRequests(Array.isArray(data) ? data : []);
         } catch (err) {
             console.error('Support fetch error:', err);
         }
@@ -260,6 +260,11 @@ export default function AdminPage() {
     };
 
     const handleAddProduct = async () => {
+        if (!newProduct.name || !newProduct.price || !newProduct.imageUrl) {
+            showToast('Please fill Name, Price, and Image URL', 'error');
+            return;
+        }
+
         try {
             const res = await fetch('/api/products', {
                 method: 'POST',
@@ -268,7 +273,7 @@ export default function AdminPage() {
                     ...newProduct,
                     id: `PROD-${Date.now()}`,
                     price: parseFloat(newProduct.price),
-                    stock: parseInt(newProduct.stock),
+                    stock: parseInt(newProduct.stock) || 0,
                     images: [newProduct.imageUrl]
                 })
             });
@@ -280,9 +285,14 @@ export default function AdminPage() {
                     isTrending: false, isLimited: false
                 });
                 fetchData();
+                showToast('Product released/added successfully!');
+            } else {
+                const error = await res.json();
+                showToast(error.error || 'Failed to release product', 'error');
             }
         } catch (err) {
-            console.error('Failed to add product');
+            console.error('Failed to add product:', err);
+            showToast('Failed to add product - network error', 'error');
         }
     };
 
@@ -858,9 +868,15 @@ export default function AdminPage() {
                             </div>
 
                             <div className={styles.requestsGrid}>
-                                {supportRequests.filter(r => (r.message || '').includes('ELITE_REQUEST')).length === 0 ? (
+                                {supportRequests.filter(r =>
+                                    (r.message || '').includes('ELITE_REQUEST') ||
+                                    (r.message || '').includes('Join Elite Program')
+                                ).length === 0 ? (
                                     <p style={{ opacity: 0.5 }}>No pending elite applications.</p>
-                                ) : supportRequests.filter(r => (r.message || '').includes('ELITE_REQUEST')).map((request: any) => (
+                                ) : supportRequests.filter(r =>
+                                    (r.message || '').includes('ELITE_REQUEST') ||
+                                    (r.message || '').includes('Join Elite Program')
+                                ).map((request: any) => (
                                     <div key={request.id} className={styles.requestCard}>
                                         <div className={styles.reqHeader}>
                                             <h3>{request.name}</h3>

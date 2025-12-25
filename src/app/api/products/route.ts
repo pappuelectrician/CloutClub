@@ -17,15 +17,24 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
     try {
         const product = await request.json();
-        const newProduct = {
+
+        // Map to DB columns and remove frontend-only fields
+        const dbProduct = {
             id: product.id || `PROD-${Date.now()}`,
-            ...product,
+            name: product.name,
+            category: product.category,
+            price: product.price,
+            stock: product.stock,
+            images: product.images || [],
+            description: product.description,
             isTrending: product.isTrending || false,
             isLimited: product.isLimited || false
         };
-        await addItem('products', newProduct);
-        return NextResponse.json({ success: true, product: newProduct });
+
+        const added = await addItem('products', dbProduct);
+        return NextResponse.json({ success: true, product: added });
     } catch (error) {
+        console.error('API Error adding product:', error);
         return NextResponse.json({ success: false, error: 'Failed to add product' }, { status: 500 });
     }
 }
@@ -33,12 +42,25 @@ export async function POST(request: Request) {
 export async function PUT(request: Request) {
     try {
         const { id, ...updates } = await request.json();
-        const updated = await updateItem('products', id, updates);
+
+        // Clean up updates for DB
+        const dbUpdates: any = {};
+        if (updates.name !== undefined) dbUpdates.name = updates.name;
+        if (updates.category !== undefined) dbUpdates.category = updates.category;
+        if (updates.price !== undefined) dbUpdates.price = updates.price;
+        if (updates.stock !== undefined) dbUpdates.stock = updates.stock;
+        if (updates.images !== undefined) dbUpdates.images = updates.images;
+        if (updates.description !== undefined) dbUpdates.description = updates.description;
+        if (updates.isTrending !== undefined) dbUpdates.isTrending = updates.isTrending;
+        if (updates.isLimited !== undefined) dbUpdates.isLimited = updates.isLimited;
+
+        const updated = await updateItem('products', id, dbUpdates);
         if (updated) {
             return NextResponse.json({ success: true, product: updated });
         }
         return NextResponse.json({ success: false, error: 'Product not found' }, { status: 404 });
     } catch (error) {
+        console.error('API Error updating product:', error);
         return NextResponse.json({ success: false, error: 'Failed to update product' }, { status: 500 });
     }
 }

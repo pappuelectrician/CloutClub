@@ -515,13 +515,19 @@
 
 .modalInputs select {
     width: 100%;
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    padding: 12px 15px;
-    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    padding: 15px;
+    border-radius: 12px;
     color: #fff;
     font-family: inherit;
-    margin-bottom: 20px;
+    transition: all 0.3s ease;
+}
+
+.modalInputs select:focus {
+    outline: none;
+    border-color: var(--primary);
+    background: rgba(255, 255, 255, 0.1);
 }
 
 .urlInput {
@@ -677,18 +683,22 @@
     gap: 15px;
 }
 
-.modalForm input {
+.modalForm input,
+.modalInputs input {
     background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
     padding: 15px;
     border-radius: 12px;
     color: #fff;
     font-family: inherit;
+    width: 100%;
 }
 
-.modalForm input:focus {
+.modalForm input:focus,
+.modalInputs input:focus {
     outline: none;
     border-color: var(--primary);
+    background: rgba(255, 255, 255, 0.1);
 }
 
 .modalForm .saveBtn {
@@ -1157,6 +1167,7 @@
     font-size: 0.8rem;
     letter-spacing: 0.1em;
 }
+
 /* Elite Requests */
 .requestsGrid {
     display: grid;

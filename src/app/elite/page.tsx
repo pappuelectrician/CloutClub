@@ -66,7 +66,7 @@ export default function ElitePage() {
                     phone: formData.phone,
                     type: 'ELITE_REQUEST',
                     email: 'yashu@cloutclub.com',
-                    message: `Join Elite Program Request from ${formData.name} (${formData.phone})`
+                    message: `ELITE_REQUEST: Join Elite Program Request from ${formData.name} (${formData.phone})`
                 })
             });
 
