@@ -1,39 +1,36 @@
 .sideScrollContainer {
     position: fixed;
-    right: 20px;
-    top: 0;
-    bottom: 0;
-    width: 60px;
-    /* Wider hit area for touch */
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 40px;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
     z-index: 1000;
     pointer-events: none;
-    /* Let clicks through unless on handles */
+    display: none;
+    /* Only show on mobile via media query */
 }
 
 .sideScrollWrapper {
-    width: 8px;
+    width: 2px;
+    /* Invisible track width */
     height: 300px;
-    background: rgba(255, 255, 255, 0.05);
-    border-radius: 20px;
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
     position: relative;
     pointer-events: auto;
-    /* Catch events here */
+    background: transparent !important;
+    border: none !important;
 }
 
 .scrollHandle {
-    width: 30px;
-    /* Wider handle for grabbing */
+    width: 10px;
     height: 40px;
     background: #00f2ff;
-    border-radius: 12px;
+    border-radius: 20px;
     cursor: grab;
-    box-shadow: 0 0 20px rgba(0, 242, 255, 0.4);
+    box-shadow: 0 0 15px rgba(0, 242, 255, 0.4);
     position: absolute;
     left: 50%;
     transform: translateX(-50%);
@@ -41,23 +38,24 @@
     align-items: center;
     justify-content: center;
     touch-action: none;
+    border: 1px solid rgba(255, 255, 255, 0.3);
 }
 
 .scrollHandle:active {
     cursor: grabbing;
     background: #fff;
-    box-shadow: 0 0 30px rgba(255, 255, 255, 0.6);
+    width: 14px;
+    box-shadow: 0 0 30px rgba(255, 255, 255, 0.8);
 }
 
 .gripIcon {
-    color: #000;
-    opacity: 0.7;
+    display: none !important;
 }
 
 .quickTop {
-    margin-top: 20px;
-    width: 50px;
-    height: 50px;
+    margin-top: 30px;
+    width: 45px;
+    height: 45px;
     border-radius: 50%;
     background: rgba(0, 0, 0, 0.8);
     backdrop-filter: blur(10px);
@@ -72,24 +70,9 @@
     pointer-events: auto;
 }
 
-.quickTop:hover {
-    transform: scale(1.1);
-    border-color: #00f2ff;
-    box-shadow: 0 0 20px rgba(0, 242, 255, 0.4);
-}
-
 @media (max-width: 768px) {
     .sideScrollContainer {
-        right: 10px;
-    }
-
-    .sideScrollWrapper {
-        height: 250px;
-        width: 10px;
-    }
-
-    .scrollHandle {
-        width: 35px;
-        height: 50px;
+        display: flex;
+        /* Mobile only */
     }
 }
