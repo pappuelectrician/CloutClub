@@ -138,6 +138,36 @@
     .mobileMenuBtn {
         display: flex;
     }
+
+    .navContainer {
+        padding: 0 15px;
+        height: 50px;
+    }
+
+    .logo {
+        font-size: 1.1rem;
+    }
+
+    .hideMobile {
+        display: none;
+    }
+
+    .navActions {
+        gap: 12px;
+    }
+}
+
+.eliteBtnMobile {
+    width: 100%;
+    padding: 15px;
+    border-radius: 12px;
+    background: #000;
+    color: #fff;
+    font-weight: 800;
+    text-align: center;
+    position: relative;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: linear-gradient(45deg, rgba(255, 0, 0, 0.1), rgba(0, 242, 255, 0.1));
 }
 
 .eliteBtn {
@@ -186,11 +216,19 @@
 
 .eliteBtn:hover {
     transform: scale(1.05);
-    text-shadow: 0 0 10px rgba(255,255,255,0.8);
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
 }
 
 @keyframes rgb-glow {
-    0% { background-position: 0 0; }
-    50% { background-position: 400% 0; }
-    100% { background-position: 0 0; }
+    0% {
+        background-position: 0 0;
+    }
+
+    50% {
+        background-position: 400% 0;
+    }
+
+    100% {
+        background-position: 0 0;
+    }
 }

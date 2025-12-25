@@ -76,7 +76,7 @@ export default function Navbar() {
                 </div>
 
                 <div className={styles.navActions}>
-                    <Link href="/elite" className={styles.eliteBtn}>
+                    <Link href="/elite" className={clsx(styles.eliteBtn, styles.hideMobile)}>
                         ELITE
                     </Link>
                     <Link href="/cart" className={styles.actionIcon}>
@@ -117,6 +117,9 @@ export default function Navbar() {
                             </Link>
                         ))}
                         <div className={styles.mobileActions}>
+                            <Link href="/elite" className={styles.eliteBtnMobile} onClick={() => setMobileMenuOpen(false)}>
+                                ELITE ACCESS
+                            </Link>
                             <Link href="/account" onClick={() => setMobileMenuOpen(false)}>
                                 Account
                             </Link>

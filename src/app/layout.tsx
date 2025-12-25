@@ -8,7 +8,14 @@ export const metadata: Metadata = {
   title: 'CLOUT CLUB | Premium Streetwear',
   description: 'The ultimate destination for Gen Z streetwear. Hoodies, Shirts, and Pants with a futuristic tech vibe.',
   icons: {
-    icon: '/icon.png',
+    icon: [
+      { url: '/favicon.ico' },
+      { url: '/icon.png', type: 'image/png' },
+      { url: '/favicon.png', type: 'image/png' },
+    ],
+    apple: [
+      { url: '/icon.png' },
+    ],
   },
 };
 
