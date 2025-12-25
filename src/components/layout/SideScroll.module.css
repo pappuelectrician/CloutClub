@@ -17,10 +17,10 @@
 
 .scrollHandle {
     width: 100%;
-    background: linear-gradient(180deg, #00f2ff, #7000ff);
+    background: #00f2ff;
     border-radius: 10px;
     cursor: pointer;
-    box-shadow: 0 0 15px rgba(0, 242, 255, 0.5);
+    box-shadow: 0 0 10px rgba(0, 242, 255, 0.3);
     position: absolute;
     top: 0;
 }
