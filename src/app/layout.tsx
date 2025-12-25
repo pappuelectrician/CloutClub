@@ -7,6 +7,9 @@ import { CartProvider } from '@/context/CartContext';
 export const metadata: Metadata = {
   title: 'CLOUT LAB | Premium Streetwear',
   description: 'The ultimate destination for Gen Z streetwear. Hoodies, Shirts, and Pants with a futuristic tech vibe.',
+  icons: {
+    icon: '/icon.png',
+  },
 };
 
 export default function RootLayout({
