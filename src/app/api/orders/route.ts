@@ -14,8 +14,9 @@ export async function POST(request: Request) {
         await addItem('orders', newOrder);
 
         return NextResponse.json({ success: true, order: newOrder });
-    } catch (error) {
-        return NextResponse.json({ success: false, error: 'Failed to place order' }, { status: 500 });
+    } catch (error: any) {
+        console.error('Order creation failed:', error);
+        return NextResponse.json({ success: false, error: 'Failed to place order: ' + (error.message || JSON.stringify(error)) }, { status: 500 });
     }
 }
 
