@@ -29,10 +29,10 @@ export async function POST(request: Request) {
 
         if (status === 'success') {
             // Update order status in DB
-            await updateItem('orders', txnid, { status: 'PAID' });
+            await updateItem<any>('orders', txnid, { status: 'PAID' });
             return NextResponse.redirect(new URL(`/checkout?step=3&txnid=${txnid}`, request.url), 303);
         } else {
-            await updateItem('orders', txnid, { status: 'FAILED' });
+            await updateItem<any>('orders', txnid, { status: 'FAILED' });
             return NextResponse.redirect(new URL('/checkout?error=payment_failed', request.url), 303);
         }
     } catch (error) {

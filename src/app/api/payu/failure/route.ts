@@ -7,7 +7,7 @@ export async function POST(request: Request) {
         const txnid = formData.get('txnid') as string;
 
         if (txnid) {
-            await updateItem('orders', txnid, { status: 'FAILED' });
+            await updateItem<any>('orders', txnid, { status: 'FAILED' });
         }
 
         return NextResponse.redirect(new URL('/checkout?error=payment_cancelled', request.url), 303);
