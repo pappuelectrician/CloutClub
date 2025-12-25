@@ -1157,3 +1157,101 @@
     font-size: 0.8rem;
     letter-spacing: 0.1em;
 }
+/* Elite Requests */
+.requestsGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 25px;
+    margin-top: 30px;
+}
+
+.requestCard {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    padding: 30px;
+    border-radius: 25px;
+    transition: all 0.3s ease;
+}
+
+.requestCard:hover {
+    border-color: var(--primary);
+}
+
+.reqHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.reqHeader h3 {
+    font-size: 1.2rem;
+    font-weight: 900;
+}
+
+.statusBadge {
+    font-size: 0.6rem;
+    font-weight: 900;
+    padding: 4px 10px;
+    border-radius: 5px;
+    background: rgba(250, 204, 21, 0.1);
+    color: #facc15;
+    text-transform: uppercase;
+}
+
+.reqBody {
+    margin-bottom: 25px;
+}
+
+.reqBody p {
+    font-size: 0.9rem;
+    margin-bottom: 8px;
+    text-align: left;
+}
+
+.reqBody strong {
+    color: rgba(255, 255, 255, 0.4);
+    font-size: 0.75rem;
+    display: inline-block;
+    width: 60px;
+}
+
+.timestamp {
+    font-size: 0.7rem;
+    opacity: 0.4;
+    margin-top: 15px;
+    text-align: left;
+}
+
+.reqActions {
+    display: flex;
+    gap: 10px;
+}
+
+.approveBtn {
+    flex: 1;
+    background: var(--primary);
+    color: #000;
+    border: none;
+    padding: 12px;
+    border-radius: 12px;
+    font-weight: 900;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 0.75rem;
+    letter-spacing: 0.05em;
+}
+
+.approveBtn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 242, 255, 0.3);
+}
+
+.statsMini {
+    font-size: 0.7rem;
+    font-weight: 900;
+    color: var(--primary);
+    background: rgba(0, 242, 255, 0.1);
+    padding: 5px 12px;
+    border-radius: 10px;
+}

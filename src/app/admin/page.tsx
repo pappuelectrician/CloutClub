@@ -193,6 +193,29 @@ export default function AdminPage() {
         }
     };
 
+    const handleApproveElite = async (request: any) => {
+        try {
+            const res = await fetch('/api/users', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ action: 'toggleElite', email: request.email })
+            });
+
+            if (res.ok) {
+                await fetch('/api/support', {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ id: request.id, status: 'approved' })
+                });
+                showToast(`Elite access granted to ${request.name}`);
+                fetchData();
+                fetchSupportRequests();
+            }
+        } catch (err) {
+            showToast('Failed to grant elite access', 'error');
+        }
+    };
+
     const handleUpdateOrder = async (order: any) => {
         try {
             const res = await fetch('/api/orders', {
@@ -349,7 +372,8 @@ export default function AdminPage() {
                             { id: 'users', label: 'USERS', icon: Users },
                             { id: 'content', label: 'CONTENT', icon: Layout },
                             { id: 'allpage', label: 'ALL PAGE', icon: Grid },
-                            { id: 'support', label: 'SUPPORT HUB', icon: PhoneCall }
+                            { id: 'support', label: 'SUPPORT HUB', icon: PhoneCall },
+                            { id: 'elite-requests', label: 'ELITE REQS', icon: ShieldCheck }
                         ].map(tab => (
                             <button
                                 key={tab.id}
@@ -797,23 +821,67 @@ export default function AdminPage() {
                         <motion.div key="support" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
                             <div className={styles.sectionHeader}>
                                 <h2>SUPPORT HUB</h2>
-                                <p>{supportRequests.length} PENDING REQUESTS</p>
+                                <div className={styles.statsMini}>
+                                    <span>{supportRequests.length} ACTIVE REQUESTS</span>
+                                </div>
                             </div>
 
                             <div className={styles.supportGrid}>
                                 {supportRequests.length === 0 ? (
-                                    <div className={styles.empty}>NO PENDING REQUESTS</div>
-                                ) : supportRequests.map((req: any) => (
+                                    <p style={{ opacity: 0.5 }}>No active support requests.</p>
+                                ) : supportRequests.filter(r => !(r.message || '').includes('ELITE_REQUEST')).map((req: any) => (
                                     <div key={req.id} className={styles.supportCard}>
-                                        <div className={styles.supportReason}>{req.reason.toUpperCase()}</div>
-                                        <h4>{req.customerName}</h4>
-                                        <p>{req.customerEmail}</p>
+                                        <div className={styles.supportReason}>{(req.reason || 'Support').toUpperCase()}</div>
+                                        <h4>{req.name || req.customerName}</h4>
+                                        <p>{req.email || req.customerEmail}</p>
                                         <div className={styles.supportMeta}>
                                             <a href={`tel:${req.phone}`} className={styles.phoneLink}>
                                                 <PhoneCall size={16} /> {req.phone}
                                             </a>
                                             <button className={styles.deleteBtn} onClick={() => handleDeleteSupport(req.id)}>
                                                 <Check size={16} /> RESOLVED
+                                            </button>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </motion.div>
+                    )}
+
+                    {activeTab === 'elite-requests' && (
+                        <motion.div key="elite-requests" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+                            <div className={styles.sectionHeader}>
+                                <h2>ELITE MEMBERSHIP APPLICATIONS</h2>
+                                <div className={styles.statsMini}>
+                                    <span>{supportRequests.filter(r => (r.message || '').includes('ELITE_REQUEST')).length} PENDING</span>
+                                </div>
+                            </div>
+
+                            <div className={styles.requestsGrid}>
+                                {supportRequests.filter(r => (r.message || '').includes('ELITE_REQUEST')).length === 0 ? (
+                                    <p style={{ opacity: 0.5 }}>No pending elite applications.</p>
+                                ) : supportRequests.filter(r => (r.message || '').includes('ELITE_REQUEST')).map((request: any) => (
+                                    <div key={request.id} className={styles.requestCard}>
+                                        <div className={styles.reqHeader}>
+                                            <h3>{request.name}</h3>
+                                            <span className={styles.statusBadge}>{request.status}</span>
+                                        </div>
+                                        <div className={styles.reqBody}>
+                                            <p><strong>Phone:</strong> {request.phone || request.message.match(/\((.*?)\)/)?.[1] || 'N/A'}</p>
+                                            <p><strong>Email:</strong> {request.email}</p>
+                                            <p className={styles.timestamp}>{new Date(request.createdAt || request.date).toLocaleString()}</p>
+                                        </div>
+                                        <div className={styles.reqActions}>
+                                            <button
+                                                className={styles.approveBtn}
+                                                style={{ opacity: request.status === 'approved' ? 0.5 : 1, cursor: request.status === 'approved' ? 'default' : 'pointer' }}
+                                                onClick={() => request.status !== 'approved' && handleApproveElite(request)}
+                                                disabled={request.status === 'approved'}
+                                            >
+                                                {request.status === 'approved' ? 'ACCESS GRANTED' : 'GRANT ELITE ACCESS'}
+                                            </button>
+                                            <button className={styles.deleteBtn} style={{ padding: '0 15px' }} onClick={() => handleDeleteSupport(request.id)}>
+                                                <Trash size={16} />
                                             </button>
                                         </div>
                                     </div>

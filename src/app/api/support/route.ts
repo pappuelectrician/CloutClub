@@ -1,10 +1,15 @@
 import { NextResponse } from 'next/server';
-import { readData, addItem, deleteItem } from '@/lib/db';
+import { supabase } from '@/lib/supabase';
 
 export async function GET() {
     try {
-        const requests = await readData('support_requests');
-        return NextResponse.json(requests);
+        const { data, error } = await supabase
+            .from('support')
+            .select('*')
+            .order('createdAt', { ascending: false });
+
+        if (error) throw error;
+        return NextResponse.json(data);
     } catch (error) {
         return NextResponse.json({ error: 'Failed to fetch support requests' }, { status: 500 });
     }
@@ -13,14 +18,19 @@ export async function GET() {
 export async function POST(request: Request) {
     try {
         const body = await request.json();
-        const newRequest = {
-            id: `SUP-${Date.now()}`,
-            ...body,
-            status: 'PENDING',
-            date: new Date().toISOString()
-        };
-        await addItem('support_requests', newRequest);
-        return NextResponse.json({ success: true, request: newRequest });
+        const { data, error } = await supabase
+            .from('support')
+            .insert([{
+                id: `SUP-${Date.now()}`,
+                name: body.name,
+                email: body.email,
+                message: body.message,
+                status: 'pending'
+            }])
+            .select();
+
+        if (error) throw error;
+        return NextResponse.json({ success: true, request: data[0] });
     } catch (error) {
         return NextResponse.json({ error: 'Failed to submit support request' }, { status: 500 });
     }
@@ -31,9 +41,32 @@ export async function DELETE(request: Request) {
         const { searchParams } = new URL(request.url);
         const id = searchParams.get('id');
         if (!id) return NextResponse.json({ error: 'ID required' }, { status: 400 });
-        await deleteItem('support_requests', id);
+
+        const { error } = await supabase
+            .from('support')
+            .delete()
+            .eq('id', id);
+
+        if (error) throw error;
         return NextResponse.json({ success: true });
     } catch (error) {
         return NextResponse.json({ error: 'Failed to delete request' }, { status: 500 });
+    }
+}
+
+export async function PUT(request: Request) {
+    try {
+        const body = await request.json();
+        const { id, status } = body;
+
+        const { error } = await supabase
+            .from('support')
+            .update({ status })
+            .eq('id', id);
+
+        if (error) throw error;
+        return NextResponse.json({ success: true });
+    } catch (error) {
+        return NextResponse.json({ error: 'Failed to update request' }, { status: 500 });
     }
 }
