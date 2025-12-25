@@ -76,6 +76,9 @@ export default function Navbar() {
                 </div>
 
                 <div className={styles.navActions}>
+                    <Link href="/elite" className={styles.eliteBtn}>
+                        ELITE
+                    </Link>
                     <Link href="/cart" className={styles.actionIcon}>
                         <ShoppingBag size={20} />
                         {cartItemsCount > 0 && (

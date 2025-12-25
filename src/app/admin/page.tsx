@@ -993,6 +993,7 @@ export default function AdminPage() {
                                                 <option>Hoodies</option>
                                                 <option>Shirts</option>
                                                 <option>Pants</option>
+                                                <option>ELITE</option>
                                             </select>
                                         </div>
                                         <div className={styles.inputGroup}>
@@ -1133,6 +1134,7 @@ export default function AdminPage() {
                                                 <option>Hoodies</option>
                                                 <option>Shirts</option>
                                                 <option>Pants</option>
+                                                <option>ELITE</option>
                                             </select>
                                         </div>
                                         <div className={styles.inputGroup}>

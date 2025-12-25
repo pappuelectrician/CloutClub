@@ -1,0 +1,188 @@
+.eliteWrapper {
+    min-height: 100vh;
+    padding: 120px 20px 60px;
+    background: #000;
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.eliteHeader {
+    text-align: center;
+    margin-bottom: 80px;
+}
+
+.eliteTitle {
+    font-size: 5rem;
+    font-weight: 900;
+    letter-spacing: -0.05em;
+    margin-bottom: 20px;
+    background: linear-gradient(45deg, #00f2ff, #7000ff, #00f2ff);
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: shine 3s linear infinite;
+}
+
+@keyframes shine {
+    to {
+        background-position: 200% center;
+    }
+}
+
+.eliteSubtitle {
+    font-size: 1rem;
+    letter-spacing: 0.3em;
+    opacity: 0.6;
+    text-transform: uppercase;
+}
+
+.restrictionBox {
+    margin-top: 100px;
+    padding: 60px;
+    border-radius: 40px;
+    position: relative;
+    max-width: 600px;
+    text-align: center;
+    background: rgba(0, 0, 0, 0.8);
+}
+
+.restrictionBox::before {
+    content: '';
+    position: absolute;
+    inset: -2px;
+    background: linear-gradient(45deg, #ff0000, #ff7300, #fffb00, #48ff00, #00ffd5, #002bff, #7a00ff, #ff00c8, #ff0000);
+    background-size: 400%;
+    z-index: -1;
+    filter: blur(10px);
+    animation: rgb-glow 10s linear infinite;
+    border-radius: 42px;
+}
+
+@keyframes rgb-glow {
+    0% {
+        background-position: 0 0;
+    }
+
+    50% {
+        background-position: 400% 0;
+    }
+
+    100% {
+        background-position: 0 0;
+    }
+}
+
+.restrictionBox h2 {
+    font-size: 2.5rem;
+    font-weight: 900;
+    margin-bottom: 20px;
+    background: linear-gradient(135deg, #ff0000, #ff00c8);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.restrictionBox p {
+    font-size: 1.1rem;
+    line-height: 1.6;
+    opacity: 0.8;
+}
+
+.contactBtn {
+    margin-top: 30px;
+    padding: 15px 40px;
+    border-radius: 30px;
+    background: #fff;
+    color: #000;
+    font-weight: 900;
+    text-decoration: none;
+    display: inline-block;
+    transition: all 0.3s ease;
+}
+
+.contactBtn:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(255, 255, 255, 0.2);
+}
+
+.eliteGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 40px;
+    width: 100%;
+    max-width: 1200px;
+}
+
+.eliteCard {
+    background: #111;
+    border-radius: 30px;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.eliteCard:hover {
+    transform: translateY(-10px);
+    border-color: var(--primary);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.8);
+}
+
+.cardTop {
+    position: relative;
+    height: 400px;
+}
+
+.cardTop img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.cardLabel {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: var(--primary);
+    color: #000;
+    padding: 5px 15px;
+    border-radius: 10px;
+    font-size: 0.7rem;
+    font-weight: 900;
+}
+
+.cardInfo {
+    padding: 30px;
+}
+
+.cardInfo h3 {
+    font-size: 1.5rem;
+    margin-bottom: 10px;
+}
+
+.cardInfo p {
+    font-size: 0.9rem;
+    opacity: 0.5;
+    margin-bottom: 20px;
+}
+
+.cardFooter {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.price {
+    font-size: 1.5rem;
+    font-weight: 900;
+}
+
+@media (max-width: 768px) {
+    .eliteTitle {
+        font-size: 3rem;
+    }
+
+    .restrictionBox {
+        padding: 40px 20px;
+    }
+}
