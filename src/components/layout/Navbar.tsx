@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { ShoppingBag, User, Menu, X, Box } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, useScroll, useSpring } from 'framer-motion';
 import { clsx } from 'clsx';
 import styles from './Navbar.module.css';
 
@@ -23,6 +23,12 @@ export default function Navbar() {
     const [scrolled, setScrolled] = useState(false);
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const pathname = usePathname();
+    const { scrollYProgress } = useScroll();
+    const scaleX = useSpring(scrollYProgress, {
+        stiffness: 100,
+        damping: 30,
+        restDelta: 0.001
+    });
 
     const cartItemsCount = cart.reduce((acc, item) => acc + item.quantity, 0);
 
@@ -47,6 +53,7 @@ export default function Navbar() {
 
     return (
         <nav className={clsx(styles.navWrapper, scrolled && styles.scrolled)}>
+            <motion.div className={styles.progressBar} style={{ scaleX }} />
             <div className={clsx(styles.navContainer, 'glass')}>
                 <Link href="/" className={styles.logo}>
                     {config.brand.name}<span className="text-gradient">{config.brand.suffix}</span>
