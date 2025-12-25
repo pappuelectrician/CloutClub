@@ -1,3 +1,4 @@
+// Middleware for Auth and Admin protection
 import { NextResponse, NextRequest } from 'next/server';
 
 export function middleware(request: NextRequest) {
