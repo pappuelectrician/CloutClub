@@ -1,9 +1,12 @@
 :root {
   --background: #050505;
   --foreground: #ffffff;
-  --primary: #00f2ff; /* Cyan / Electric Blue */
-  --secondary: #9d00ff; /* Purple */
-  --accent: #ff007a; /* Neon Pink */
+  --primary: #00f2ff;
+  /* Cyan / Electric Blue */
+  --secondary: #9d00ff;
+  /* Purple */
+  --accent: #ff007a;
+  /* Neon Pink */
   --surface: rgba(255, 255, 255, 0.05);
   --surface-hover: rgba(255, 255, 255, 0.1);
   --glass-bg: rgba(10, 10, 10, 0.6);
@@ -90,8 +93,19 @@ button {
   background: #444;
 }
 
+@media (max-width: 768px) {
+  ::-webkit-scrollbar {
+    display: none;
+  }
+}
+
 /* Typography */
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   font-weight: 800;
   letter-spacing: -0.02em;
 }

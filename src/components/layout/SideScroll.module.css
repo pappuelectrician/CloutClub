@@ -1,41 +1,63 @@
-.sideScrollWrapper {
+.sideScrollContainer {
     position: fixed;
-    right: 10px;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 6px;
-    height: 150px;
+    right: 20px;
+    top: 0;
+    bottom: 0;
+    width: 60px;
+    /* Wider hit area for touch */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    pointer-events: none;
+    /* Let clicks through unless on handles */
+}
+
+.sideScrollWrapper {
+    width: 8px;
+    height: 300px;
     background: rgba(255, 255, 255, 0.05);
-    border-radius: 10px;
-    z-index: 999;
+    border-radius: 20px;
     backdrop-filter: blur(10px);
     border: 1px solid rgba(255, 255, 255, 0.1);
-    display: flex;
-    justify-content: center;
-    overflow: hidden;
+    position: relative;
+    pointer-events: auto;
+    /* Catch events here */
 }
 
 .scrollHandle {
-    width: 100%;
+    width: 30px;
+    /* Wider handle for grabbing */
+    height: 40px;
     background: #00f2ff;
-    border-radius: 10px;
-    cursor: pointer;
-    box-shadow: 0 0 10px rgba(0, 242, 255, 0.3);
+    border-radius: 12px;
+    cursor: grab;
+    box-shadow: 0 0 20px rgba(0, 242, 255, 0.4);
     position: absolute;
-    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    touch-action: none;
 }
 
 .scrollHandle:active {
-    filter: brightness(1.2);
-    box-shadow: 0 0 25px rgba(0, 242, 255, 0.8);
+    cursor: grabbing;
+    background: #fff;
+    box-shadow: 0 0 30px rgba(255, 255, 255, 0.6);
+}
+
+.gripIcon {
+    color: #000;
+    opacity: 0.7;
 }
 
 .quickTop {
-    position: fixed;
-    right: 20px;
-    bottom: 30px;
-    width: 45px;
-    height: 45px;
+    margin-top: 20px;
+    width: 50px;
+    height: 50px;
     border-radius: 50%;
     background: rgba(0, 0, 0, 0.8);
     backdrop-filter: blur(10px);
@@ -45,28 +67,29 @@
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    z-index: 1000;
     transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    pointer-events: auto;
 }
 
 .quickTop:hover {
-    transform: scale(1.1) translateY(-5px);
+    transform: scale(1.1);
     border-color: #00f2ff;
     box-shadow: 0 0 20px rgba(0, 242, 255, 0.4);
 }
 
 @media (max-width: 768px) {
-    .sideScrollWrapper {
-        right: 5px;
-        height: 120px;
-        width: 8px;
+    .sideScrollContainer {
+        right: 10px;
     }
 
-    .quickTop {
-        right: 15px;
-        bottom: 20px;
-        width: 40px;
-        height: 40px;
+    .sideScrollWrapper {
+        height: 250px;
+        width: 10px;
+    }
+
+    .scrollHandle {
+        width: 35px;
+        height: 50px;
     }
 }

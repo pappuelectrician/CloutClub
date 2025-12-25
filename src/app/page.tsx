@@ -24,7 +24,7 @@ export default function Home() {
     });
   }, []);
 
-  if (!config) return <div className={styles.loading}>INITIALIZING CLOUT...</div>;
+  if (!config) return null;
 
   const trendingItems = products.filter(p => p.isTrending);
   const limitedItems = products.filter(p => p.isLimited && !p.isTrending); // Prioritize trending if both set
