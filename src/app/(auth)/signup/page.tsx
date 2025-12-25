@@ -36,11 +36,12 @@ export default function SignupPage() {
                             localStorage.setItem('user_name', formData.name);
                             window.location.href = '/account';
                         } else {
-                            alert('Signup failed. Email might be in use.');
+                            const errorData = await res.json();
+                            alert(errorData.error || 'Signup failed. Please try again.');
                         }
                     } catch (err) {
                         console.error(err);
-                        alert('Signup failed');
+                        alert('Signup failed. Please check your connection.');
                     }
                 }}>
                     <div className={styles.inputWrapper}>

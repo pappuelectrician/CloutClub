@@ -29,6 +29,9 @@ CREATE TABLE orders (
 CREATE TABLE users (
   id TEXT PRIMARY KEY,
   email TEXT UNIQUE NOT NULL,
+  name TEXT,
+  level TEXT DEFAULT 'BASIC MEMBER',
+  "isElite" BOOLEAN DEFAULT false,
   role TEXT DEFAULT 'user',
   "createdAt" TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
