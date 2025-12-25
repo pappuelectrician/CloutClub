@@ -1066,7 +1066,7 @@ export default function AdminPage() {
                             </div>
 
                             <div className={styles.saveConfigBar}>
-                                <button className={styles.saveBtn} onClick={() => handleUpdateConfig(config)}>
+                                <button className={styles.saveBtn} onClick={() => handleUpdateConfig()}>
                                     <Save size={18} /> SAVE ALLIED PAGE CONFIG
                                 </button>
                             </div>
