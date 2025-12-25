@@ -37,7 +37,7 @@ export default function AllPage() {
                 >
                     EXPLORE <span className="text-gradient">ALL</span>
                 </motion.h1>
-                <p>The complete archive of Clout Lab aesthetics.</p>
+                <p>The complete archive of Clout Club aesthetics.</p>
             </header>
 
             <main className={styles.sections}>

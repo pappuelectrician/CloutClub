@@ -46,7 +46,7 @@ export default function AdminLoginPage() {
                 className={styles.loginCard}
             >
                 <div className={styles.header}>
-                    <div className={styles.logo}>CLOUT<span className="text-gradient">LAB</span></div>
+                    <div className={styles.logo}>CLOUT<span className="text-gradient">CLUB</span></div>
                     <h1>ADMIN <span className="text-gradient">PORTAL</span></h1>
                     <p>Secure access for elite management only.</p>
                 </div>

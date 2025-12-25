@@ -16,7 +16,7 @@ export default function SignupPage() {
                 animate={{ opacity: 1, scale: 1 }}
                 className={styles.authCard}
             >
-                <h1 className={styles.title}>JOIN THE <span className="text-gradient">LAB</span></h1>
+                <h1 className={styles.title}>JOIN THE <span className="text-gradient">CLUB</span></h1>
                 <p className={styles.subtitle}>Create an account to start your journey.</p>
 
                 <form className={styles.form} onSubmit={(e) => e.preventDefault()}>

@@ -8,14 +8,14 @@
   },
   "brand": {
     "name": "CLOUT",
-    "suffix": "LAB",
+    "suffix": "CLUB",
     "motto": "ELEVATE YOUR AESTHETIC"
   },
   "labels": {
     "inStock": "IN STOCK",
     "outOfStock": "OUT OF STOCK",
     "addToBag": "ADD TO BAG",
-    "addingToBag": "ADDING TO CLOUT..."
+    "addingToBag": "ADDING TO CLUB..."
   },
   "categories": [
     {
@@ -52,8 +52,8 @@
     "active": true
   },
   "footer": {
-    "copyright": "© 2025 CLOUT LAB. ALL RIGHTS RESERVED.",
-    "aboutText": "Born in the digital age, Clout Lab is the intersection of high fashion and street culture."
+    "copyright": "© 2025 CLOUT CLUB. ALL RIGHTS RESERVED.",
+    "aboutText": "Born in the digital age, Clout Club is the intersection of high fashion and street culture."
   },
   "allPage": {
     "showTrending": true,

@@ -11,7 +11,7 @@ export default function AccountPage() {
     const [selectedOrder, setSelectedOrder] = useState<any>(null);
     const [user, setUser] = useState({
         name: 'Yashu D.',
-        email: 'yashu@cloutlab.com',
+        email: 'yashu@cloutclub.com',
         level: 'ELITE MEMBER',
         joined: 'Dec 2025'
     });
@@ -31,7 +31,7 @@ export default function AccountPage() {
 
     const fetchUserData = async () => {
         try {
-            const email = 'yashu@cloutlab.com';
+            const email = 'yashu@cloutclub.com';
             const res = await fetch(`/api/users?email=${email}`);
             const data = await res.json();
             if (data) {
@@ -259,7 +259,7 @@ export default function AccountPage() {
                                 className={styles.supportContent}
                             >
                                 <h1 className={styles.title}>GET <span className="text-gradient">SUPPORT</span></h1>
-                                <p>Request a call back from the Clout Lab team.</p>
+                                <p>Request a call back from the Clout Club team.</p>
 
                                 <form className={styles.supportForm} onSubmit={async (e) => {
                                     e.preventDefault();
