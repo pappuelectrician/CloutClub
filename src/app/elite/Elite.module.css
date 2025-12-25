@@ -20,7 +20,17 @@
     font-weight: 900;
     letter-spacing: -0.05em;
     margin-bottom: 20px;
-    color: #fff;
+    background: linear-gradient(45deg, #00f2ff, #7000ff, #00f2ff);
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: shine 3s linear infinite;
+}
+
+@keyframes shine {
+    to {
+        background-position: 200% center;
+    }
 }
 
 
@@ -78,6 +88,28 @@
     backdrop-filter: blur(20px);
     border: 1px solid rgba(255, 255, 255, 0.05);
     box-shadow: 0 40px 100px rgba(0, 0, 0, 0.9);
+}
+
+.restrictionBox::before {
+    content: '';
+    position: absolute;
+    inset: -2px;
+    background: linear-gradient(45deg, #ff0000, #ff7300, #fffb00, #48ff00, #00ffd5, #002bff, #7a00ff, #ff00c8, #ff0000);
+    background-size: 400%;
+    z-index: -1;
+    filter: blur(10px);
+    animation: rgb-ring 10s linear infinite;
+    border-radius: 42px;
+}
+
+@keyframes rgb-ring {
+    0% {
+        background-position: 0% 0%;
+    }
+
+    100% {
+        background-position: 400% 0%;
+    }
 }
 
 .restrictionBox h2 {
