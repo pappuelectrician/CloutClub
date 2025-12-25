@@ -259,16 +259,23 @@ export default function AccountPage() {
                                 className={styles.supportContent}
                             >
                                 <h1 className={styles.title}>GET <span className="text-gradient">SUPPORT</span></h1>
-                                <p>Request a call back from the Clout Club team.</p>
+                                <p>Send us an enquiry and we will get back to you within 24 hours.</p>
 
                                 <form className={styles.supportForm} onSubmit={async (e) => {
                                     e.preventDefault();
                                     const formData = new FormData(e.currentTarget);
+
+                                    // Combine reason and description into message for the API
+                                    const topic = formData.get('topic');
+                                    const description = formData.get('description');
+                                    const phone = formData.get('phone');
+
                                     const payload = {
-                                        phone: formData.get('phone'),
-                                        reason: formData.get('reason'),
-                                        customerName: user.name,
-                                        customerEmail: user.email
+                                        name: user.name,
+                                        email: user.email,
+                                        phone: phone,
+                                        reason: topic,
+                                        message: `TOPIC: ${topic}\n\nDESCRIPTION: ${description}\n\nPHONE: ${phone}`
                                     };
 
                                     try {
@@ -277,12 +284,20 @@ export default function AccountPage() {
                                             headers: { 'Content-Type': 'application/json' },
                                             body: JSON.stringify(payload)
                                         });
+
+                                        const result = await res.json();
+                                        console.log('SUPPORT SUBMISSION RESULT:', result);
+
                                         if (res.ok) {
-                                            showToast('Request submitted! We will call you back shortly.');
+                                            showToast('Enquiry submitted successfully!');
                                             e.currentTarget.reset();
+                                        } else {
+                                            const errorMsg = result.error || result.details || 'Failed to submit enquiry.';
+                                            showToast(typeof errorMsg === 'string' ? errorMsg : 'Check console for error details', 'error');
                                         }
                                     } catch (err) {
-                                        showToast('Failed to submit request.', 'error');
+                                        console.error('SUBMISSION ERROR:', err);
+                                        showToast('Failed to submit enquiry - connection error.', 'error');
                                     }
                                 }}>
                                     <div className={styles.inputGroup}>
@@ -290,16 +305,27 @@ export default function AccountPage() {
                                         <input name="phone" type="tel" placeholder="+91 XXXXX XXXXX" required />
                                     </div>
                                     <div className={styles.inputGroup}>
-                                        <label>REASON FOR CALL BACK</label>
-                                        <select name="reason" required className={styles.select}>
-                                            <option value="">Select a reason</option>
+                                        <label>ENQUIRY TOPIC</label>
+                                        <select name="topic" required className={styles.select}>
+                                            <option value="">Select a topic</option>
                                             <option value="Order details">Order details</option>
                                             <option value="Design request">Design request</option>
                                             <option value="Payment related queries">Payment related queries</option>
+                                            <option value="General Enquiry">General Enquiry</option>
                                         </select>
                                     </div>
+                                    <div className={styles.inputGroup}>
+                                        <label>DESCRIPTION OF ENQUIRY</label>
+                                        <textarea
+                                            name="description"
+                                            placeholder="Tell us more about your enquiry..."
+                                            required
+                                            className={styles.textarea}
+                                            rows={4}
+                                        ></textarea>
+                                    </div>
                                     <button type="submit" className={styles.submitBtn}>
-                                        REQUEST CALL BACK
+                                        SUBMIT ENQUIRY
                                     </button>
                                 </form>
                             </motion.div>

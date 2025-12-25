@@ -50,13 +50,29 @@ export default function AllPage() {
                 )}
 
                 {sections.map((section: any) => {
-                    const sectionProducts = section.productIds
-                        .map((id: string) => products.find(p => p.id === id))
-                        .filter(Boolean);
+                    const items = (section.items || []).map((item: any) => {
+                        if (item.type === 'product') {
+                            const p = products.find(p => p.id === item.id);
+                            return p ? { ...p, type: 'product' } : null;
+                        } else {
+                            return { ...item, type: 'custom' };
+                        }
+                    }).filter(Boolean);
 
-                    if (sectionProducts.length === 0) return null;
+                    // Fallback for old config with productIds
+                    if (items.length === 0 && section.productIds) {
+                        const legacyItems = section.productIds
+                            .map((id: string) => products.find(p => p.id === id))
+                            .filter(Boolean)
+                            .map((p: any) => ({ ...p, type: 'product' }));
+                        if (legacyItems.length > 0) {
+                            return <ProductCarousel key={section.id} title={section.title} items={legacyItems} />;
+                        }
+                    }
 
-                    return <ProductCarousel key={section.id} title={section.title} items={sectionProducts} />;
+                    if (items.length === 0) return null;
+
+                    return <ProductCarousel key={section.id} title={section.title} items={items} />;
                 })}
             </main>
         </div>
@@ -84,34 +100,42 @@ function ProductCarousel({ title, items, type }: { title: string, items: any[], 
                 </div>
             </div>
             <div className={styles.carouselWrapper} ref={scrollRef}>
-                {items.map((item, idx) => (
-                    <motion.div
-                        key={item.id}
-                        className={styles.productCard}
-                        initial={{ opacity: 0, x: 20 }}
-                        whileInView={{ opacity: 1, x: 0 }}
-                        transition={{ delay: idx * 0.05 }}
-                    >
-                        <Link href={`/${item.category.toLowerCase()}`}>
-                            <div className={styles.imageContainer}>
-                                {item.isTrending && type !== 'trending' && (
-                                    <div className={styles.trendingBadge}><Flame size={12} /> TRENDING</div>
-                                )}
-                                {item.isLimited && type !== 'limited' && (
-                                    <div className={styles.limitedBadge}><Crown size={12} /> LIMITED</div>
-                                )}
-                                <img src={item.images?.[0]} alt={item.name} />
-                                <div className={styles.overlay}>
-                                    <span>VIEW DETAILS</span>
+                {items.map((item, idx) => {
+                    const isProduct = item.type === 'product' || !item.type;
+                    const img = isProduct ? item.images?.[0] : item.image;
+                    const link = isProduct ? `/product/${item.id}` : (item.link || '#');
+                    const name = item.name;
+                    const price = isProduct ? `₹${item.price}` : '';
+
+                    return (
+                        <motion.div
+                            key={item.id || idx}
+                            className={styles.productCard}
+                            initial={{ opacity: 0, x: 20 }}
+                            whileInView={{ opacity: 1, x: 0 }}
+                            transition={{ delay: idx * 0.05 }}
+                        >
+                            <Link href={link}>
+                                <div className={styles.imageContainer}>
+                                    {isProduct && item.isTrending && type !== 'trending' && (
+                                        <div className={styles.trendingBadge}><Flame size={12} /> TRENDING</div>
+                                    )}
+                                    {isProduct && item.isLimited && type !== 'limited' && (
+                                        <div className={styles.limitedBadge}><Crown size={12} /> LIMITED</div>
+                                    )}
+                                    <img src={img} alt={name} />
+                                    <div className={styles.overlay}>
+                                        <span>{isProduct ? 'VIEW DETAILS' : 'EXPLORE'}</span>
+                                    </div>
                                 </div>
+                            </Link>
+                            <div className={styles.itemInfo}>
+                                <h4>{name}</h4>
+                                {price && <p className={styles.price}>{price}</p>}
                             </div>
-                        </Link>
-                        <div className={styles.itemInfo}>
-                            <h4>{item.name}</h4>
-                            <p className={styles.price}>₹{item.price}</p>
-                        </div>
-                    </motion.div>
-                ))}
+                        </motion.div>
+                    );
+                })}
             </div>
         </section>
     );

@@ -84,22 +84,24 @@
     position: relative;
     max-width: 650px;
     text-align: center;
-    background: rgba(10, 10, 10, 0.95);
-    backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.05);
-    box-shadow: 0 40px 100px rgba(0, 0, 0, 0.9);
+    background: #0a0a0a;
+    /* Solid dark background to hide anything behind */
+    backdrop-filter: blur(40px);
+    z-index: 1;
+    /* Keep content above border */
 }
 
 .restrictionBox::before {
     content: '';
     position: absolute;
     inset: -2px;
+    /* Extend outward to form the border */
     background: linear-gradient(45deg, #ff0000, #ff7300, #fffb00, #48ff00, #00ffd5, #002bff, #7a00ff, #ff00c8, #ff0000);
     background-size: 400%;
     z-index: -1;
-    filter: blur(10px);
-    animation: rgb-ring 10s linear infinite;
+    /* Place behind the solid background */
     border-radius: 42px;
+    animation: rgb-ring 10s linear infinite;
 }
 
 @keyframes rgb-ring {
@@ -118,6 +120,7 @@
     margin-bottom: 20px;
     color: #ff3333;
     letter-spacing: -0.02em;
+    text-shadow: 0 0 20px rgba(255, 51, 51, 0.3);
 }
 
 .restrictionBox p {
@@ -143,6 +146,28 @@
 .contactBtn:hover {
     transform: translateY(-5px);
     box-shadow: 0 10px 30px rgba(255, 255, 255, 0.2);
+}
+
+.eliteSections {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 100px;
+}
+
+.sectionBlock {
+    width: 100%;
+    max-width: 1200px;
+}
+
+.sectionTitle {
+    font-size: 2.5rem;
+    font-weight: 900;
+    margin-bottom: 40px;
+    letter-spacing: -0.02em;
+    padding-left: 20px;
+    border-left: 4px solid var(--primary);
 }
 
 .eliteGrid {

@@ -17,11 +17,12 @@ export default function AdminPage() {
     const [supportRequests, setSupportRequests] = useState<any[]>([]);
     const [config, setConfig] = useState<any>(null);
     const [loading, setLoading] = useState(true);
+    const [isUploading, setIsUploading] = useState(false);
     const [activeTab, setActiveTab] = useState('inventory');
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
     const [editingOrder, setEditingOrder] = useState<any>(null);
     const [editingProduct, setEditingProduct] = useState<any>(null);
-    const [selectingForSection, setSelectingForSection] = useState<string | null>(null);
+    const [selectingForSection, setSelectingForSection] = useState<{ id: string, page: string } | null>(null);
 
     // Custom UI states
     const [confirmModal, setConfirmModal] = useState<{
@@ -137,6 +138,7 @@ export default function AdminPage() {
     };
 
     const handleFileUpload = async (file: File, type: 'product' | 'config' | 'category', extra?: any) => {
+        setIsUploading(true);
         const formData = new FormData();
         formData.append('file', file);
 
@@ -160,9 +162,15 @@ export default function AdminPage() {
                     newCats[extra].image = data.url;
                     setConfig({ ...config, categories: newCats });
                 }
+                showToast('Upload successful');
+            } else {
+                showToast(data.error || 'Upload failed', 'error');
             }
         } catch (err) {
-            showToast('Upload failed', 'error');
+            console.error('Upload Error:', err);
+            showToast('Upload failed - network error', 'error');
+        } finally {
+            setIsUploading(false);
         }
     };
 
@@ -195,6 +203,15 @@ export default function AdminPage() {
 
     const handleApproveElite = async (request: any) => {
         try {
+            // Check if user exists first to provide better feedback
+            const checkRes = await fetch(`/api/users?email=${request.email}`);
+            const userData = await checkRes.json();
+
+            if (!userData) {
+                showToast('USER ACCOUNT NOT FOUND. They must sign up first.', 'error');
+                return;
+            }
+
             const res = await fetch('/api/users', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -212,6 +229,7 @@ export default function AdminPage() {
                 fetchSupportRequests();
             }
         } catch (err) {
+            console.error('Approve Error:', err);
             showToast('Failed to grant elite access', 'error');
         }
     };
@@ -260,7 +278,8 @@ export default function AdminPage() {
     };
 
     const handleAddProduct = async () => {
-        if (!newProduct.name || !newProduct.price || !newProduct.imageUrl) {
+        const { name, price, imageUrl } = newProduct;
+        if (!name.trim() || !price || !imageUrl) {
             showToast('Please fill Name, Price, and Image URL', 'error');
             return;
         }
@@ -344,15 +363,24 @@ export default function AdminPage() {
         setConfig({ ...config, allPage: { ...config.allPage, sections: updated } });
     };
 
-    const addProductToSection = (sectionId: string, productId: string) => {
-        const updated = config.allPage.sections.map((s: any) => {
-            if (s.id === sectionId) {
-                if (s.productIds.includes(productId)) return s;
-                return { ...s, productIds: [...s.productIds, productId] };
+    const addProductToSection = (selection: { id: string, page: string }, productId: string) => {
+        const pageKey = selection.page as 'allPage' | 'elitePage';
+        const updatedSections = config[pageKey].sections.map((s: any) => {
+            if (s.id === selection.id) {
+                // Ensure items array exists (backward compatibility)
+                const items = s.items || (s.productIds ? s.productIds.map((id: string) => ({ type: 'product', id })) : []);
+                if (items.some((i: any) => i.id === productId)) return s;
+
+                const newItem = { type: 'product', id: productId };
+                return {
+                    ...s,
+                    items: [...items, newItem],
+                    productIds: s.productIds ? [...s.productIds, productId] : undefined // keep productIds for compat
+                };
             }
             return s;
         });
-        setConfig({ ...config, allPage: { ...config.allPage, sections: updated } });
+        setConfig({ ...config, [pageKey]: { ...config[pageKey], sections: updatedSections } });
         setSelectingForSection(null);
     };
 
@@ -383,7 +411,8 @@ export default function AdminPage() {
                             { id: 'content', label: 'CONTENT', icon: Layout },
                             { id: 'allpage', label: 'ALL PAGE', icon: Grid },
                             { id: 'support', label: 'SUPPORT HUB', icon: PhoneCall },
-                            { id: 'elite-requests', label: 'ELITE REQS', icon: ShieldCheck }
+                            { id: 'elite-requests', label: 'ELITE APPS', icon: ShieldCheck },
+                            { id: 'elite-config', label: 'ELITE PAGE', icon: Crown }
                         ].map(tab => (
                             <button
                                 key={tab.id}
@@ -432,7 +461,7 @@ export default function AdminPage() {
                         <motion.div key="inventory" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
                             <div className={styles.sectionHeader}>
                                 <h2>INVENTORY MANAGEMENT</h2>
-                                <button className={styles.addBtn} onClick={() => setIsAddModalOpen(true)}>
+                                <button className={styles.addBtn} onClick={() => { setEditingProduct(null); setIsAddModalOpen(true); }}>
                                     <Plus size={18} /> ADD PRODUCT
                                 </button>
                             </div>
@@ -813,12 +842,30 @@ export default function AdminPage() {
                                                     })}
                                                 </div>
 
-                                                <button
-                                                    className={styles.addProdBtn}
-                                                    onClick={() => setSelectingForSection(section.id)}
-                                                >
-                                                    <Plus size={14} /> ADD PRODUCT
-                                                </button>
+                                                <div className={styles.sectionActions}>
+                                                    <button
+                                                        className={styles.addProdBtn}
+                                                        onClick={() => setSelectingForSection({ id: section.id, page: 'allPage' })}
+                                                    >
+                                                        <Plus size={14} /> ADD PRODUCT
+                                                    </button>
+                                                    <button
+                                                        className={styles.addCustomBtn}
+                                                        onClick={() => {
+                                                            const name = prompt("Enter item name:");
+                                                            const image = prompt("Enter image URL:");
+                                                            const link = prompt("Enter destination link (optional):");
+                                                            if (name && image) {
+                                                                const updated = config.allPage.sections.map((s: any) =>
+                                                                    s.id === section.id ? { ...s, items: [...(s.items || []), { type: 'custom', name, image, link: link || '#' }] } : s
+                                                                );
+                                                                setConfig({ ...config, allPage: { ...config.allPage, sections: updated } });
+                                                            }
+                                                        }}
+                                                    >
+                                                        <Plus size={14} /> ADD CUSTOM ITEM
+                                                    </button>
+                                                </div>
                                             </div>
                                         ))}
                                     </div>
@@ -844,6 +891,7 @@ export default function AdminPage() {
                                         <div className={styles.supportReason}>{(req.reason || 'Support').toUpperCase()}</div>
                                         <h4>{req.name || req.customerName}</h4>
                                         <p>{req.email || req.customerEmail}</p>
+                                        <p className={styles.reqMessage}>{req.message}</p>
                                         <div className={styles.supportMeta}>
                                             <a href={`tel:${req.phone}`} className={styles.phoneLink}>
                                                 <PhoneCall size={16} /> {req.phone}
@@ -861,7 +909,7 @@ export default function AdminPage() {
                     {activeTab === 'elite-requests' && (
                         <motion.div key="elite-requests" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
                             <div className={styles.sectionHeader}>
-                                <h2>ELITE MEMBERSHIP APPLICATIONS</h2>
+                                <h2>ELITE ACCESS APPLICATIONS</h2>
                                 <div className={styles.statsMini}>
                                     <span>{supportRequests.filter(r => (r.message || '').includes('ELITE_REQUEST')).length} PENDING</span>
                                 </div>
@@ -905,6 +953,125 @@ export default function AdminPage() {
                             </div>
                         </motion.div>
                     )}
+                    {activeTab === 'elite-config' && (
+                        <motion.div key="elite-config" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+                            <div className={styles.sectionHeader}>
+                                <h2>ELITE PAGE MANAGEMENT</h2>
+                                <div style={{ display: 'flex', gap: 10 }}>
+                                    <button className={styles.addBtn} onClick={() => {
+                                        setNewProduct({ ...newProduct, category: 'ELITE' });
+                                        setIsAddModalOpen(true);
+                                    }}>
+                                        <Package size={16} /> ADD ELITE PRODUCT
+                                    </button>
+                                    <button className={styles.addBtn} onClick={() => {
+                                        const newSections = [...(config.elitePage?.sections || []), {
+                                            id: `section-${Date.now()}`,
+                                            title: 'NEW SECTION',
+                                            items: []
+                                        }];
+                                        setConfig({ ...config, elitePage: { ...config.elitePage, sections: newSections } });
+                                    }}>
+                                        <Plus size={16} /> ADD SECTION
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div className={styles.sectionsList}>
+                                {(config.elitePage?.sections || []).length === 0 && <p style={{ opacity: 0.5 }}>No sections added yet.</p>}
+                                {(config.elitePage?.sections || []).map((section: any) => (
+                                    <div key={section.id} className={styles.sectionCard}>
+                                        <div className={styles.sectionCardHead}>
+                                            <input
+                                                value={section.title}
+                                                onChange={(e) => {
+                                                    const updated = config.elitePage.sections.map((s: any) =>
+                                                        s.id === section.id ? { ...s, title: e.target.value } : s
+                                                    );
+                                                    setConfig({ ...config, elitePage: { ...config.elitePage, sections: updated } });
+                                                }}
+                                                placeholder="ENTER SECTION TITLE..."
+                                            />
+                                            <button
+                                                className={styles.deleteBtn}
+                                                onClick={() => {
+                                                    const updated = config.elitePage.sections.filter((s: any) => s.id !== section.id);
+                                                    setConfig({ ...config, elitePage: { ...config.elitePage, sections: updated } });
+                                                }}
+                                            >
+                                                <Trash2 size={16} />
+                                            </button>
+                                        </div>
+
+                                        <div className={styles.prodList}>
+                                            {(section.items || []).map((item: any, idx: number) => {
+                                                const p = item.type === 'product' ? products.find(prod => prod.id === item.id) : null;
+                                                return (
+                                                    <div key={idx} className={styles.prodListItem}>
+                                                        <div className={styles.itemRef}>
+                                                            {item.type === 'product' ? (
+                                                                <>
+                                                                    <Package size={14} />
+                                                                    <span>{p ? p.name : item.id}</span>
+                                                                </>
+                                                            ) : (
+                                                                <>
+                                                                    <ImageIcon size={14} />
+                                                                    <span>{item.name} (Custom)</span>
+                                                                </>
+                                                            )}
+                                                        </div>
+                                                        <button
+                                                            className={styles.inlineDeleteBtn}
+                                                            onClick={() => {
+                                                                const updated = config.elitePage.sections.map((s: any) =>
+                                                                    s.id === section.id ? { ...s, items: s.items.filter((_: any, i: number) => i !== idx) } : s
+                                                                );
+                                                                setConfig({ ...config, elitePage: { ...config.elitePage, sections: updated } });
+                                                            }}
+                                                        >
+                                                            <X size={14} />
+                                                        </button>
+                                                    </div>
+                                                );
+                                            })}
+                                        </div>
+
+                                        <div className={styles.sectionActions}>
+                                            <button
+                                                className={styles.addProdBtn}
+                                                onClick={() => setSelectingForSection({ id: section.id, page: 'elitePage' })}
+                                            >
+                                                <Plus size={14} /> ADD PRODUCT
+                                            </button>
+                                            <button
+                                                className={styles.addCustomBtn}
+                                                onClick={() => {
+                                                    const name = prompt("Enter item name:");
+                                                    const image = prompt("Enter image URL:");
+                                                    const link = prompt("Enter destination link (optional):");
+                                                    if (name && image) {
+                                                        const updated = config.elitePage.sections.map((s: any) =>
+                                                            s.id === section.id ? { ...s, items: [...(s.items || []), { type: 'custom', name, image, link: link || '#' }] } : s
+                                                        );
+                                                        setConfig({ ...config, elitePage: { ...config.elitePage, sections: updated } });
+                                                    }
+                                                }}
+                                            >
+                                                <Plus size={14} /> ADD CUSTOM ITEM
+                                            </button>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+
+                            <div className={styles.saveConfigBar}>
+                                <button className={styles.saveBtn} onClick={() => handleUpdateConfig(config)}>
+                                    <Save size={18} /> SAVE ALLIED PAGE CONFIG
+                                </button>
+                            </div>
+                        </motion.div>
+                    )}
                 </AnimatePresence>
             </div>
 
@@ -924,16 +1091,18 @@ export default function AdminPage() {
                                 <button onClick={() => setSelectingForSection(null)}><X size={20} /></button>
                             </div>
                             <div className={styles.selectorList}>
-                                {products.map(p => (
-                                    <div
-                                        key={p.id}
-                                        className={styles.selectorItem}
-                                        onClick={() => addProductToSection(selectingForSection, p.id)}
-                                    >
-                                        <span>{p.name}</span>
-                                        <span style={{ opacity: 0.5 }}>{p.category}</span>
-                                    </div>
-                                ))}
+                                {products
+                                    .filter(p => selectingForSection.page === 'elitePage' ? p.category === 'ELITE' : true)
+                                    .map(p => (
+                                        <div
+                                            key={p.id}
+                                            className={styles.selectorItem}
+                                            onClick={() => addProductToSection(selectingForSection, p.id)}
+                                        >
+                                            <span>{p.name}</span>
+                                            <span style={{ opacity: 0.5 }}>{p.category}</span>
+                                        </div>
+                                    ))}
                             </div>
                         </motion.div>
                     </div>
@@ -996,7 +1165,7 @@ export default function AdminPage() {
                                         />
                                     </div>
                                     <div className={styles.inputGroup} style={{ flex: 1 }}>
-                                        <label>TOTAL AMOUNT ($)</label>
+                                        <label>TOTAL AMOUNT (₹)</label>
                                         <input
                                             type="number"
                                             value={editingOrder.total}
@@ -1081,7 +1250,7 @@ export default function AdminPage() {
                                             </select>
                                         </div>
                                         <div className={styles.inputGroup}>
-                                            <label>PRICE ($)</label>
+                                            <label>PRICE (₹)</label>
                                             <input
                                                 type="number"
                                                 value={editingProduct.price}
@@ -1110,7 +1279,7 @@ export default function AdminPage() {
                                                 />
                                             </div>
                                             <label className={styles.uploadBtn}>
-                                                <Upload size={16} /> UPLOAD
+                                                <Upload size={16} /> {isUploading ? 'UPLOADING...' : 'UPLOAD'}
                                                 <input type="file" className={styles.uploadInput} onChange={(e) => e.target.files?.[0] && handleFileUpload(e.target.files[0], 'product')} />
                                             </label>
                                         </div>
@@ -1222,7 +1391,7 @@ export default function AdminPage() {
                                             </select>
                                         </div>
                                         <div className={styles.inputGroup}>
-                                            <label>PRICE ($)</label>
+                                            <label>PRICE (₹)</label>
                                             <input
                                                 type="number"
                                                 placeholder="99"
@@ -1253,7 +1422,7 @@ export default function AdminPage() {
                                                 />
                                             </div>
                                             <label className={styles.uploadBtn}>
-                                                <Upload size={16} /> UPLOAD
+                                                <Upload size={16} /> {isUploading ? 'UPLOADING...' : 'UPLOAD'}
                                                 <input type="file" className={styles.uploadInput} onChange={(e) => e.target.files?.[0] && handleFileUpload(e.target.files[0], 'product')} />
                                             </label>
                                         </div>

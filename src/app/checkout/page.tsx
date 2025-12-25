@@ -17,11 +17,22 @@ export default function CheckoutPage() {
         address: '',
         city: '',
         postalCode: '',
+        phone: '',
     });
     const [isAutoFilled, setIsAutoFilled] = useState(false);
 
     useEffect(() => {
         fetch('/api/config').then(res => res.json()).then(data => setConfig(data));
+
+        // Check for PayU return
+        const params = new URLSearchParams(window.location.search);
+        if (params.get('step') === '3') {
+            setStep(3);
+            clearCart();
+        }
+        if (params.get('error')) {
+            alert('Payment Error: ' + params.get('error'));
+        }
     }, []);
 
     const handleEmailBlur = async () => {
@@ -48,9 +59,15 @@ export default function CheckoutPage() {
 
     const nextStep = () => setStep(step + 1);
 
-    const simulatePayment = async () => {
+    const initiatePayment = async () => {
         try {
-            const response = await fetch('/api/orders', {
+            if (!formData.phone) {
+                alert('Phone number is required for payment.');
+                return;
+            }
+
+            // 1. Create the order in our DB as PENDING
+            const orderRes = await fetch('/api/orders', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -59,33 +76,104 @@ export default function CheckoutPage() {
                     total: cartTotal,
                 }),
             });
-
-            if (response.ok) {
-                // Also save shipping info permanently for the user
-                await fetch('/api/users', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        action: 'saveShipping',
-                        email: formData.email,
-                        shippingInfo: {
-                            firstName: formData.firstName,
-                            lastName: formData.lastName,
-                            address: formData.address,
-                            city: formData.city,
-                            postalCode: formData.postalCode
-                        }
-                    })
-                });
-                setStep(3);
-                clearCart();
+            if (!orderRes.ok) {
+                const errorData = await orderRes.json();
+                throw new Error(errorData.error || 'Failed to create order');
             }
-        } catch (error) {
-            console.error('Payment failed', error);
+            const orderData = await orderRes.json();
+            const order = orderData.order;
+
+            // Save shipping info permanently for the user
+            fetch('/api/users', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    action: 'saveShipping',
+                    email: formData.email,
+                    shippingInfo: {
+                        firstName: formData.firstName,
+                        lastName: formData.lastName,
+                        address: formData.address,
+                        city: formData.city,
+                        postalCode: formData.postalCode,
+                        phone: formData.phone
+                    }
+                })
+            }).catch(e => console.error('Save shipping silent fail', e));
+
+            const productInfo = 'Clothing Order';
+
+            // 2. Get the Hash and PayU info
+            const hashRes = await fetch('/api/payu/hash', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    txnid: order.id,
+                    amount: cartTotal.toFixed(2),
+                    productinfo: productInfo,
+                    firstname: formData.firstName,
+                    email: formData.email
+                })
+            });
+
+            if (!hashRes.ok) {
+                const hashError = await hashRes.json();
+                throw new Error(hashError.error || 'Failed to generate hash');
+            }
+            const payuData = await hashRes.json();
+
+            // 3. Create a form and submit to PayU
+            console.log('HANDSHAKING WITH PAYU...', payuData);
+
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = payuData.actionUrl;
+            form.setAttribute('enctype', 'application/x-www-form-urlencoded');
+
+            const params: any = {
+                key: String(payuData.key),
+                txnid: String(payuData.txnid),
+                amount: String(payuData.amount),
+                productinfo: productInfo,
+                firstname: String(payuData.firstname),
+                email: String(payuData.email),
+                phone: String(formData.phone),
+                surl: `${window.location.origin}/api/payu/success`,
+                furl: `${window.location.origin}/api/payu/failure`,
+                hash: String(payuData.hash),
+                pg: 'UPI',
+                bankcode: 'UPI',
+                udf1: String(payuData.udf1 || ''),
+                udf2: String(payuData.udf2 || ''),
+                udf3: String(payuData.udf3 || ''),
+                udf4: String(payuData.udf4 || ''),
+                udf5: String(payuData.udf5 || ''),
+                service_provider: 'payu_paisa'
+            };
+
+            console.log('PAYU SUBMIT PARAMS:', params);
+
+            for (const key in params) {
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = key;
+                input.value = params[key];
+                form.appendChild(input);
+            }
+
+            document.body.appendChild(form);
+            form.submit();
+
+        } catch (error: any) {
+            console.error('Payment initiation failed', error);
+            alert(`Payment Error: ${error.message || 'Something went wrong. Please try again.'}`);
         }
     };
 
     if (step === 3) {
+        const params = new URLSearchParams(window.location.search);
+        const displayTxnId = params.get('txnid') || `CLOUT-${Math.floor(Math.random() * 100000)}`;
+
         return (
             <div className={styles.successContainer}>
                 <motion.div
@@ -96,7 +184,7 @@ export default function CheckoutPage() {
                     <CheckCircle size={80} color="var(--primary)" />
                     <h1>ORDER PLACED!</h1>
                     <p>Your clout is on the way. Check your email for confirmation.</p>
-                    <div className={styles.orderNumber}>ORDER #CLOUT-{Math.floor(Math.random() * 100000)}</div>
+                    <div className={styles.orderNumber}>ORDER #{displayTxnId}</div>
                     <button onClick={() => window.location.href = '/'} className={styles.homeBtn}>BACK TO HOME</button>
                 </motion.div>
             </div>
@@ -158,6 +246,9 @@ export default function CheckoutPage() {
                                     <input type="text" name="city" placeholder="City" value={formData.city} onChange={handleInputChange} />
                                     <input type="text" name="postalCode" placeholder="Postal Code" value={formData.postalCode} onChange={handleInputChange} />
                                 </div>
+                                <div className={styles.inputGroup}>
+                                    <input type="tel" name="phone" placeholder="Phone Number (PayU Required)" value={formData.phone} onChange={handleInputChange} required />
+                                </div>
                                 <button className={styles.nextBtn} onClick={nextStep}>CONTINUE TO PAYMENT</button>
                             </motion.div>
                         ) : (
@@ -174,18 +265,12 @@ export default function CheckoutPage() {
                                 <h2>PAYMENT METHOD</h2>
                                 <div className={styles.paymentOptions}>
                                     <div className={styles.paymentMethod + ' ' + styles.activeMethod}>
-                                        <CreditCard />
-                                        <span>CREDIT / DEBIT CARD</span>
+                                        <Zap size={20} />
+                                        <span>DIRECT UPI PAYMENT</span>
                                     </div>
                                 </div>
-                                <div className={styles.inputGroup}>
-                                    <input type="text" placeholder="Card Number" />
-                                </div>
-                                <div className={styles.inputRow}>
-                                    <input type="text" placeholder="MM/YY" />
-                                    <input type="text" placeholder="CVC" />
-                                </div>
-                                <button className={styles.nextBtn} onClick={simulatePayment}>COMPLETE ORDER</button>
+                                <p className={styles.inputHint}>You will be redirected to PayU to securely complete your UPI transaction.</p>
+                                <button className={styles.nextBtn} onClick={initiatePayment}>COMPLETE ORDER</button>
                             </motion.div>
                         )}
                     </AnimatePresence>

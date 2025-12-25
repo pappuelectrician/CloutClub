@@ -929,6 +929,18 @@
     display: inline-block;
 }
 
+.reqMessage {
+    background: rgba(0, 0, 0, 0.2);
+    padding: 15px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    margin: 15px 0;
+    white-space: pre-wrap;
+    opacity: 0.8;
+    line-height: 1.5;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
 .supportMeta {
     display: flex;
     justify-content: space-between;
@@ -1067,6 +1079,32 @@
 
 .selectorItem:hover {
     background: rgba(255, 255, 255, 0.05);
+}
+
+.sectionActions {
+    display: flex;
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.addCustomBtn {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #fff;
+    padding: 10px 15px;
+    border-radius: 10px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: all 0.2s ease;
+}
+
+.addCustomBtn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: #fff;
 }
 
 /* Custom Confirm & Notification Modals */

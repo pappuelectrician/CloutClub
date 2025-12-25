@@ -8,6 +8,7 @@ import styles from './Elite.module.css';
 
 export default function ElitePage() {
     const [isElite, setIsElite] = useState<boolean | null>(null);
+    const [config, setConfig] = useState<any>(null);
     const [products, setProducts] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [showModal, setShowModal] = useState(false);
@@ -22,8 +23,16 @@ export default function ElitePage() {
     useEffect(() => {
         const initialize = async () => {
             try {
-                // Fetch products first so they are visible behind the blur
-                await fetchEliteProducts();
+                // Fetch config and products
+                const [configRes, productsRes] = await Promise.all([
+                    fetch('/api/config'),
+                    fetch('/api/products')
+                ]);
+                const configData = await configRes.json();
+                const productsData = await productsRes.json();
+
+                setConfig(configData);
+                setProducts(productsData || []);
 
                 // Then check elite status
                 const email = 'yashu@cloutclub.com';
@@ -45,15 +54,7 @@ export default function ElitePage() {
         initialize();
     }, []);
 
-    const fetchEliteProducts = async () => {
-        try {
-            const res = await fetch('/api/products?category=ELITE');
-            const data = await res.json();
-            setProducts(data || []);
-        } catch (err) {
-            console.error('Failed to fetch elite products');
-        }
-    };
+    // No need for separate fetchEliteProducts anymore as we use common one
 
     const handleJoinRequest = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -105,35 +106,29 @@ export default function ElitePage() {
                     </motion.div>
                 </header>
 
-                <div className={styles.eliteGrid}>
-                    {products.length === 0 ? (
-                        <div style={{ textAlign: 'center', gridColumn: '1/-1', opacity: 0.5 }}>
-                            <p>No elite products available yet. Stay tuned.</p>
+                <div className={styles.eliteSections}>
+                    {(config?.elitePage?.sections || []).length === 0 ? (
+                        <div className={styles.eliteGrid}>
+                            {products.filter(p => p.category === 'ELITE').length === 0 ? (
+                                <div style={{ textAlign: 'center', gridColumn: '1/-1', opacity: 0.5 }}>
+                                    <p>No elite products available yet. Stay tuned.</p>
+                                </div>
+                            ) : (
+                                products.filter(p => p.category === 'ELITE').map((product, idx) => (
+                                    <EliteItem key={product.id} item={{ ...product, type: 'product' }} idx={idx} />
+                                ))
+                            )}
                         </div>
                     ) : (
-                        products.map((product, idx) => (
-                            <motion.div
-                                key={product.id}
-                                initial={{ opacity: 0, y: 20 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                transition={{ delay: idx * 0.1 }}
-                                className={styles.eliteCard}
-                            >
-                                <div className={styles.cardTop}>
-                                    <img src={product.images?.[0] || '/images/placeholder.png'} alt={product.name} />
-                                    <div className={styles.cardLabel}>ELITE EXCLUSIVE</div>
+                        (config.elitePage.sections).map((section: any) => (
+                            <div key={section.id} className={styles.sectionBlock}>
+                                <h2 className={styles.sectionTitle}>{section.title}</h2>
+                                <div className={styles.eliteGrid}>
+                                    {(section.items || []).map((item: any, idx: number) => (
+                                        <EliteItem key={idx} item={item.type === 'product' ? products.find(p => p.id === item.id) : item} idx={idx} isCustom={item.type === 'custom'} />
+                                    ))}
                                 </div>
-                                <div className={styles.cardInfo}>
-                                    <h3>{product.name}</h3>
-                                    <p>{product.description || 'Premium elite collection piece.'}</p>
-                                    <div className={styles.cardFooter}>
-                                        <span className={styles.price}>₹{product.price}</span>
-                                        <div className={styles.contactBtn} style={{ margin: 0, padding: '10px 20px', fontSize: '0.8rem' }}>
-                                            VIEW DETAILS <ArrowRight size={14} />
-                                        </div>
-                                    </div>
-                                </div>
-                            </motion.div>
+                            </div>
                         ))
                     )}
                 </div>
@@ -217,5 +212,42 @@ export default function ElitePage() {
                 )}
             </AnimatePresence>
         </div>
+    );
+}
+
+function EliteItem({ item, idx, isCustom }: { item: any, idx: number, isCustom?: boolean }) {
+    if (!item) return null;
+
+    const img = isCustom ? item.image : (item.images?.[0] || '/images/placeholder.png');
+    const isProd = item && (item.price !== undefined || item.type === 'product');
+    const link = isProd ? `/product/${item.id}` : (item.link || '#');
+    const title = item.name;
+    const desc = isProd ? item.description : 'Exclusive Allied Member Content';
+    const price = isProd ? `₹${item.price}` : '';
+
+    return (
+        <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: idx * 0.1 }}
+            className={styles.eliteCard}
+        >
+            <Link href={link} style={{ textDecoration: 'none', color: 'inherit', width: '100%' }}>
+                <div className={styles.cardTop}>
+                    <img src={img} alt={title} />
+                    <div className={styles.cardLabel}>{isCustom ? 'ALLIED EXCLUSIVE' : 'ELITE EXCLUSIVE'}</div>
+                </div>
+                <div className={styles.cardInfo}>
+                    <h3>{title}</h3>
+                    <p>{desc || 'Premium collection piece.'}</p>
+                    <div className={styles.cardFooter}>
+                        {price && <span className={styles.price}>{price}</span>}
+                        <div className={styles.contactBtn} style={{ margin: 0, padding: '10px 20px', fontSize: '0.8rem' }}>
+                            {isCustom ? 'EXPLORE' : 'VIEW DETAILS'} <ArrowRight size={14} />
+                        </div>
+                    </div>
+                </div>
+            </Link>
+        </motion.div>
     );
 }
