@@ -1,0 +1,74 @@
+[
+  {
+    "id": "h1",
+    "name": "NEON OVERSIZED HOODIE",
+    "category": "Hoodies",
+    "price": 89,
+    "description": "Heavyweight cotton hoodie with reactive neon accents. Premium oversized fit for the ultimate streetwear silhouette.",
+    "images": [
+      "/images/products/hoodie-1.webp"
+    ],
+    "colors": [
+      "Black",
+      "Electric Blue"
+    ],
+    "sizes": "S, M, L, XL",
+    "stock": 45,
+    "featured": true,
+    "isLimited": false,
+    "isTrending": true
+  },
+  {
+    "id": "h2",
+    "name": "CYBERPUNK GRAPHIC HOODIE",
+    "category": "Hoodies",
+    "price": 95,
+    "description": "Premium fleece hoodie featuring high-definition screen printed cyberpunk artwork on the back.",
+    "images": [
+      "/images/products/hoodie-2.webp"
+    ],
+    "colors": [
+      "Charcoal",
+      "Deep Purple"
+    ],
+    "sizes": "M, L, XL",
+    "stock": 20,
+    "featured": false,
+    "isLimited": true
+  },
+  {
+    "id": "s1",
+    "name": "TECHNO BOX TEE",
+    "category": "Shirts",
+    "price": 45,
+    "description": "Boxy fit heavy cotton tee with minimalist branding. Essential for layering.",
+    "images": [
+      "/uploads/1766642962360-1269aaf0-d896-4899-8382-a270c975921a.png"
+    ],
+    "colors": [
+      "White",
+      "Black"
+    ],
+    "sizes": "S, M, L, XL",
+    "stock": 100,
+    "featured": true,
+    "isTrending": true,
+    "isLimited": true
+  },
+  {
+    "id": "p1",
+    "name": "CARGO TECH PANTS",
+    "category": "Pants",
+    "price": 120,
+    "description": "Multi-pocket technical pants with adjustable straps and water-resistant finish.",
+    "images": [
+      "/images/products/pants-1.webp"
+    ],
+    "colors": [
+      "Obsidian Black"
+    ],
+    "sizes": "30, 32, 34, 36",
+    "stock": 15,
+    "featured": true
+  }
+]

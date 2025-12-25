@@ -1,0 +1,74 @@
+{
+  "hero": {
+    "titlePrefix": "stand out and sprout",
+    "titleSuffix": "",
+    "titleEnd": "",
+    "subtitle": "better than the rest, bored of the best",
+    "image": "/uploads/1766643252929-43753596-2178-44f5-8a27-dfb84339a833.png"
+  },
+  "brand": {
+    "name": "CLOUT",
+    "suffix": "LAB",
+    "motto": "ELEVATE YOUR AESTHETIC"
+  },
+  "labels": {
+    "inStock": "IN STOCK",
+    "outOfStock": "OUT OF STOCK",
+    "addToBag": "ADD TO BAG",
+    "addingToBag": "ADDING TO CLOUT..."
+  },
+  "categories": [
+    {
+      "id": "hoodies",
+      "name": "HOODIES",
+      "path": "/hoodies",
+      "image": "/uploads/1766643245981-hoodie.png"
+    },
+    {
+      "id": "shirts",
+      "name": "SHIRTS",
+      "path": "/shirts",
+      "image": "/uploads/1735069200001-shirt_cat.webp"
+    },
+    {
+      "id": "pants",
+      "name": "PANTS",
+      "path": "/pants",
+      "image": "/uploads/1766643242388-jogger-pants.png"
+    }
+  ],
+  "features": [
+    {
+      "title": "FAST SHIPPING",
+      "subtitle": "Global delivery within 3-5 business days."
+    },
+    {
+      "title": "PREMIUM QUALITY",
+      "subtitle": "Ethically sourced heavyweight cotton and materials."
+    }
+  ],
+  "promo": {
+    "bannerText": "EXCLUSIVE ONLY FOR THE BENGALURU MACHAS",
+    "active": true
+  },
+  "footer": {
+    "copyright": "© 2025 CLOUT LAB. ALL RIGHTS RESERVED.",
+    "aboutText": "Born in the digital age, Clout Lab is the intersection of high fashion and street culture."
+  },
+  "allPage": {
+    "showTrending": true,
+    "showLimited": true,
+    "sections": [
+      {
+        "id": "section-hoodies",
+        "title": "ESSENTIAL HOODIES",
+        "productIds": []
+      },
+      {
+        "id": "section-shirts",
+        "title": "GRAPHIC TEES",
+        "productIds": []
+      }
+    ]
+  }
+}

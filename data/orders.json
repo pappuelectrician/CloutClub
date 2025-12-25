@@ -1,0 +1,52 @@
+[
+  {
+    "customer": {
+      "email": "planseeker1132@gmail.com",
+      "firstName": "yashu",
+      "lastName": "david",
+      "address": "south avenue",
+      "city": "bengaluru",
+      "postalCode": "560083"
+    },
+    "items": [
+      {
+        "id": "h2",
+        "name": "CYBERPUNK GRAPHIC HOODIE",
+        "price": 95,
+        "image": "/images/products/hoodie-2.webp",
+        "size": "M",
+        "color": "Original",
+        "quantity": 2
+      }
+    ],
+    "total": 190,
+    "id": "CLOUT-35227",
+    "date": "2025-12-24T19:07:50.844Z",
+    "status": "PROCESSING"
+  },
+  {
+    "customer": {
+      "email": "planseeker1132@gmail.com",
+      "firstName": "yashashwi",
+      "lastName": "david",
+      "address": "south avenue",
+      "city": "bengaluru",
+      "postalCode": "560083"
+    },
+    "items": [
+      {
+        "id": "h2",
+        "name": "CYBERPUNK GRAPHIC HOODIE",
+        "price": 95,
+        "image": "/images/products/hoodie-2.webp",
+        "size": "M",
+        "color": "Original",
+        "quantity": 1
+      }
+    ],
+    "total": 95,
+    "id": "CLOUT-64722",
+    "date": "2025-12-24T20:11:33.658Z",
+    "status": "PENDING"
+  }
+]

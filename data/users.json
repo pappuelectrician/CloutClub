@@ -1,0 +1,15 @@
+[
+  {
+    "email": "yashu@cloutlab.com",
+    "name": "Yashu D.",
+    "level": "ELITE MEMBER",
+    "isElite": true,
+    "shippingInfo": {
+      "firstName": "Yashu",
+      "lastName": "D.",
+      "address": "123 Clout St",
+      "city": "Mumbai",
+      "postalCode": "400001"
+    }
+  }
+]
