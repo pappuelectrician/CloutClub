@@ -7,7 +7,7 @@ export async function POST(request: Request) {
         const newOrder = {
             ...orderData,
             id: `CLOUT-${Math.floor(Math.random() * 90000) + 10000}`,
-            date: new Date().toISOString(),
+            createdAt: new Date().toISOString(),
             status: 'PENDING'
         };
 
