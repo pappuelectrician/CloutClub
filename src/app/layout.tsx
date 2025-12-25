@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import './globals.css';
 import Navbar from '@/components/layout/Navbar';
+import SideScroll from '@/components/layout/SideScroll';
 
 import { CartProvider } from '@/context/CartContext';
 
@@ -29,6 +30,7 @@ export default function RootLayout({
       <body>
         <CartProvider>
           <Navbar />
+          <SideScroll />
           <main>{children}</main>
         </CartProvider>
       </body>

@@ -1,0 +1,72 @@
+.sideScrollWrapper {
+    position: fixed;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 6px;
+    height: 150px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 10px;
+    z-index: 999;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    display: flex;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.scrollHandle {
+    width: 100%;
+    background: linear-gradient(180deg, #00f2ff, #7000ff);
+    border-radius: 10px;
+    cursor: pointer;
+    box-shadow: 0 0 15px rgba(0, 242, 255, 0.5);
+    position: absolute;
+    top: 0;
+}
+
+.scrollHandle:active {
+    filter: brightness(1.2);
+    box-shadow: 0 0 25px rgba(0, 242, 255, 0.8);
+}
+
+.quickTop {
+    position: fixed;
+    right: 20px;
+    bottom: 30px;
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(0, 242, 255, 0.3);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 1000;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
+.quickTop:hover {
+    transform: scale(1.1) translateY(-5px);
+    border-color: #00f2ff;
+    box-shadow: 0 0 20px rgba(0, 242, 255, 0.4);
+}
+
+@media (max-width: 768px) {
+    .sideScrollWrapper {
+        right: 5px;
+        height: 120px;
+        width: 8px;
+    }
+
+    .quickTop {
+        right: 15px;
+        bottom: 20px;
+        width: 40px;
+        height: 40px;
+    }
+}
