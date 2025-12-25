@@ -183,32 +183,55 @@
 
 .eliteBtn {
     position: relative;
-    padding: 6px 15px;
-    border-radius: 20px;
+    padding: 10px 25px;
+    border-radius: 30px;
+    /* Pill shape */
     background: #000;
     color: #fff;
-    font-size: 0.75rem;
-    font-weight: 800;
-    letter-spacing: 0.1em;
+    font-size: 0.8rem;
+    font-weight: 900;
+    letter-spacing: 0.15em;
     text-decoration: none;
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
     transition: all 0.3s ease;
     border: none;
     overflow: hidden;
+    z-index: 1;
+    gap: 3px;
 }
 
-/* Persistent RGB Underline */
-.eliteUnderline {
+/* Gradient Border from Image */
+.eliteBtn::before {
+    content: '';
     position: absolute;
-    bottom: 4px;
-    left: 0;
-    right: 0;
-    height: 1px;
-    background: #00f2ff;
+    inset: 0;
+    border-radius: 30px;
+    padding: 1.5px;
+    /* Border thickness */
+    background: linear-gradient(90deg, #8a2be2, #ff0000, #ff8c00);
+    -webkit-mask:
+        linear-gradient(#fff 0 0) content-box,
+        linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+}
+
+.eliteUnderline {
+    width: 35px;
+    /* Fixed width underline like in pic */
+    height: 2px;
+    background: linear-gradient(90deg, #0047ff, #ff00ff);
+    border-radius: 1px;
     opacity: 1;
-    z-index: 2;
+}
+
+.eliteBtn:hover {
+    transform: scale(1.05);
+    opacity: 0.9;
 }
 
 @keyframes rgb-glow-underline {

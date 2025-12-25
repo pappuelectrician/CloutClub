@@ -84,8 +84,8 @@ export default function Navbar() {
 
                 <div className={styles.navActions}>
                     <Link href="/elite" className={clsx(styles.eliteBtn, styles.hideMobile)}>
-                        ELITE
-                        <span className={styles.eliteUnderline}></span>
+                        <span>ELITE</span>
+                        <div className={styles.eliteUnderline}></div>
                     </Link>
                     <Link href="/cart" className={styles.actionIcon}>
                         <ShoppingBag size={20} />
