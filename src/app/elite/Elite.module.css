@@ -6,6 +6,8 @@
     display: flex;
     flex-direction: column;
     align-items: center;
+    position: relative;
+    overflow-x: hidden;
 }
 
 .eliteHeader {
@@ -31,6 +33,41 @@
     }
 }
 
+@media (max-width: 768px) {
+    .eliteTitle {
+        font-size: 3rem;
+    }
+
+    .restrictionBox {
+        padding: 40px 20px;
+    }
+
+    .modalContent {
+        padding: 30px;
+    }
+}
+
+.blurredContent {
+    filter: blur(25px);
+    pointer-events: none;
+    user-select: none;
+    opacity: 0.6;
+    width: 100%;
+    transition: filter 0.5s ease;
+}
+
+.lockedOverlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.4);
+    z-index: 100;
+    padding-top: 100px;
+    /* Adjust based on navbar height */
+}
+
 .eliteSubtitle {
     font-size: 1rem;
     letter-spacing: 0.3em;
@@ -45,7 +82,10 @@
     position: relative;
     max-width: 600px;
     text-align: center;
-    background: rgba(0, 0, 0, 0.8);
+    background: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 40px 100px rgba(0, 0, 0, 0.8);
 }
 
 .restrictionBox::before {
