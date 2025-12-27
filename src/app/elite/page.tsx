@@ -14,11 +14,13 @@ export default function ElitePage() {
     const [loading, setLoading] = useState(true);
     const [showModal, setShowModal] = useState(false);
     const [submitted, setSubmitted] = useState(false);
+    const [submitting, setSubmitting] = useState(false);
 
     // Form state
     const [formData, setFormData] = useState({
         name: '',
-        phone: ''
+        phone: '',
+        email: ''
     });
 
     useEffect(() => {
@@ -44,7 +46,8 @@ export default function ElitePage() {
                     if (data) {
                         setFormData({
                             name: data.name || localStorage.getItem('user_name') || '',
-                            phone: data.phone || localStorage.getItem('user_phone') || ''
+                            phone: data.phone || localStorage.getItem('user_phone') || '',
+                            email: data.email || email
                         });
                         if (data.level === 'ELITE MEMBER') {
                             setIsElite(true);
@@ -71,10 +74,11 @@ export default function ElitePage() {
 
     const handleJoinRequest = async (e: React.FormEvent) => {
         e.preventDefault();
+        setSubmitting(true);
         try {
-            const userEmail = localStorage.getItem('user_email');
+            const userEmail = formData.email || localStorage.getItem('user_email');
             if (!userEmail) {
-                alert('Please sign in first to apply.');
+                alert('Please provide an email or sign in.');
                 return;
             }
 
@@ -100,6 +104,8 @@ export default function ElitePage() {
             }
         } catch (err) {
             console.error('Failed to submit request');
+        } finally {
+            setSubmitting(false);
         }
     };
 
@@ -212,6 +218,16 @@ export default function ElitePage() {
                                             />
                                         </div>
                                         <div className={styles.inputGroup}>
+                                            <label>EMAIL ADDRESS</label>
+                                            <input
+                                                type="email"
+                                                required
+                                                placeholder="Enter your email"
+                                                value={formData.email}
+                                                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                                            />
+                                        </div>
+                                        <div className={styles.inputGroup}>
                                             <label>PHONE NUMBER</label>
                                             <input
                                                 type="tel"
@@ -221,8 +237,8 @@ export default function ElitePage() {
                                                 onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                                             />
                                         </div>
-                                        <button type="submit" className={styles.submitBtn}>
-                                            SUBMIT APPLICATION
+                                        <button type="submit" className={styles.submitBtn} disabled={submitting}>
+                                            {submitting ? 'SENDING...' : 'SUBMIT APPLICATION'}
                                         </button>
                                     </form>
                                 </>

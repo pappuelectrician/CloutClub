@@ -297,6 +297,12 @@
     box-shadow: 0 10px 20px rgba(0, 242, 255, 0.3);
 }
 
+.submitBtn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+}
+
 .closeModal {
     position: absolute;
     top: 30px;
