@@ -1,6 +1,10 @@
 import { supabase } from './supabase';
 
 export async function readData<T>(tableName: string): Promise<T[]> {
+    if (!supabase) {
+        console.warn(`Supabase not configured. Returning empty array for ${tableName}.`);
+        return [];
+    }
     const { data, error } = await supabase
         .from(tableName)
         .select('*');
