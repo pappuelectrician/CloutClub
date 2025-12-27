@@ -101,9 +101,13 @@ export default function ElitePage() {
                     setShowModal(false);
                     setSubmitted(false);
                 }, 3000);
+            } else {
+                const errorData = await res.json();
+                alert(`SUBMISSION FAILED: ${errorData.error || 'Unknown error'}. Please check your DB columns.`);
             }
-        } catch (err) {
+        } catch (err: any) {
             console.error('Failed to submit request');
+            alert(`CONNECTION ERROR: ${err.message}`);
         } finally {
             setSubmitting(false);
         }
