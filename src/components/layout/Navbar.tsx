@@ -10,19 +10,21 @@ import styles from './Navbar.module.css';
 
 import { useCart } from '@/context/CartContext';
 
-const navItems = [
-    { name: 'HOME', path: '/' },
-    { name: 'ALL', path: '/all' },
-    { name: 'HOODIES', path: '/hoodies' },
-    { name: 'SHIRTS', path: '/shirts' },
-    { name: 'PANTS', path: '/pants' },
-];
-
 export default function Navbar() {
     const { cart } = useCart();
     const [scrolled, setScrolled] = useState(false);
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const pathname = usePathname();
+
+    // Define nav items dynamically based on current route
+    const navItems = [
+        { name: 'HOME', path: '/' },
+        // 'ALL' is hidden on the Elite page to avoid showing elite products there
+        ...(pathname?.startsWith('/elite') ? [] : [{ name: 'ALL', path: '/all' }]),
+        { name: 'HOODIES', path: '/hoodies' },
+        { name: 'SHIRTS', path: '/shirts' },
+        { name: 'PANTS', path: '/pants' },
+    ];
     const { scrollYProgress } = useScroll();
     const scaleX = useSpring(scrollYProgress, {
         stiffness: 100,
@@ -94,7 +96,14 @@ export default function Navbar() {
                         )}
                     </Link>
                     <Link href="/account" className={styles.actionIcon}>
-                        <User size={20} />
+                        {localStorage.getItem('user_name') ? (
+                            <div className={styles.userProfile}>
+                                <User size={20} />
+                                <span className={styles.userName}>{localStorage.getItem('user_name')?.split(' ')[0]}</span>
+                            </div>
+                        ) : (
+                            <User size={20} />
+                        )}
                     </Link>
                     <button
                         className={styles.mobileMenuBtn}

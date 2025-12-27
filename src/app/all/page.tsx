@@ -17,16 +17,28 @@ export default function AllPage() {
             fetch('/api/products').then(res => res.json())
         ]).then(([configData, productsData]) => {
             setConfig(configData);
-            setProducts(productsData || []);
+            // Filter out elite products
+            const allProducts = productsData || [];
+            const filteredProducts = allProducts.filter((p: any) => p.category?.toUpperCase() !== 'ELITE');
+            setProducts(filteredProducts);
             setLoading(false);
         });
     }, []);
 
     if (loading || !config) return <div className={styles.loading}>LOADING CLOUT...</div>;
 
-    const trendingItems = products.filter(p => p.isTrending);
-    const limitedItems = products.filter(p => p.isLimited);
-    const sections = config.allPage.sections || [];
+    const trendingItems = (products || []).filter(p => p.isTrending);
+    const limitedItems = (products || []).filter(p => p.isLimited);
+    const sections = config?.allPage?.sections || [];
+
+    // Group products by category (excluding ELITE)
+    const categoryGroups = (products || []).reduce((acc: any, p: any) => {
+        const cat = p.category?.toUpperCase() || 'UNCATEGORIZED';
+        if (cat === 'ELITE') return acc;
+        if (!acc[cat]) acc[cat] = [];
+        acc[cat].push(p);
+        return acc;
+    }, {});
 
     return (
         <div className={styles.container}>
@@ -41,13 +53,18 @@ export default function AllPage() {
             </header>
 
             <main className={styles.sections}>
-                {config.allPage.showTrending && trendingItems.length > 0 && (
+                {config?.allPage?.showTrending && trendingItems.length > 0 && (
                     <ProductCarousel title="TRENDING NOW" items={trendingItems} type="trending" />
                 )}
 
-                {config.allPage.showLimited && limitedItems.length > 0 && (
+                {config?.allPage?.showLimited && limitedItems.length > 0 && (
                     <ProductCarousel title="LIMITED DROPS" items={limitedItems} type="limited" />
                 )}
+
+                {/* Render Category Sections */}
+                {Object.entries(categoryGroups).map(([cat, items]: [any, any]) => (
+                    <ProductCarousel key={cat} title={cat} items={items} />
+                ))}
 
                 {sections.map((section: any) => {
                     const items = (section.items || []).map((item: any) => {

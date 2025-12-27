@@ -343,9 +343,38 @@
 
 .footerGrid {
     display: grid;
-    grid-template-columns: 2fr 1fr;
+    grid-template-columns: 2fr 1fr 1fr;
     gap: 60px;
-    align-items: flex-end;
+    align-items: flex-start;
+}
+
+.footerContact {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.footerContact h3 {
+    font-size: 0.8rem;
+    letter-spacing: 0.2em;
+    opacity: 0.5;
+    margin-bottom: 10px;
+}
+
+.contactItem {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.7);
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.contactItem:hover {
+    color: #fff;
+    transform: translateX(5px);
 }
 
 .footerBrand h2 {

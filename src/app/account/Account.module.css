@@ -91,6 +91,26 @@
     margin-bottom: 40px;
 }
 
+.authWindow {
+    max-width: 500px;
+    margin: 40px auto;
+    text-align: center;
+}
+
+.authSubtitle {
+    color: rgba(255, 255, 255, 0.5);
+    margin-bottom: 40px;
+    font-weight: 600;
+}
+
+.authForm {
+    background: var(--surface);
+    padding: 40px;
+    border-radius: 30px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    text-align: left;
+}
+
 .loading {
     padding: 100px 0;
     text-align: center;
@@ -426,5 +446,38 @@
 @media (max-width: 900px) {
     .grid {
         grid-template-columns: 1fr;
+    }
+}
+
+.directContact {
+    display: flex;
+    gap: 30px;
+    margin: 20px 0 40px;
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 15px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.directContact a {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--primary);
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 700;
+    transition: all 0.3s ease;
+}
+
+.directContact a:hover {
+    color: #fff;
+    transform: translateY(-2px);
+}
+
+@media (max-width: 768px) {
+    .directContact {
+        flex-direction: column;
+        gap: 15px;
     }
 }

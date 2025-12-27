@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion';
-import { ArrowRight, Zap, Shield, Truck, Flame, Crown } from 'lucide-react';
+import { ArrowRight, Zap, Shield, Truck, Flame, Crown, Mail, Phone } from 'lucide-react';
 import Link from 'next/link';
 import styles from './Home.module.css';
 
@@ -178,6 +178,15 @@ export default function Home() {
             <div className={styles.footerBrand}>
               <h2>{config.brand.name}<span>{config.brand.suffix}</span></h2>
               <p>{config.footer.aboutText}</p>
+            </div>
+            <div className={styles.footerContact}>
+              <h3>CONTACT</h3>
+              <a href="mailto:support@cloutlab.com" className={styles.contactItem}>
+                <Mail size={16} /> support@cloutlab.com
+              </a>
+              <a href="tel:+918310785221" className={styles.contactItem}>
+                <Phone size={16} /> +91 831-0785221
+              </a>
             </div>
             <div className={styles.footerCopyright}>
               <p>{config.footer.copyright}</p>

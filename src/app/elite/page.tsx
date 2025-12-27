@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useEffect } from 'react';
@@ -35,12 +36,24 @@ export default function ElitePage() {
                 setProducts(productsData || []);
 
                 // Then check elite status
-                const email = 'yashu@cloutclub.com';
-                const res = await fetch(`/api/users?email=${email}`);
-                const data = await res.json();
+                const email = localStorage.getItem('user_email');
+                if (email) {
+                    const res = await fetch(`/api/users?email=${email}`);
+                    const data = await res.json();
 
-                if (data && data.level === 'ELITE MEMBER') {
-                    setIsElite(true);
+                    if (data) {
+                        setFormData({
+                            name: data.name || localStorage.getItem('user_name') || '',
+                            phone: data.phone || localStorage.getItem('user_phone') || ''
+                        });
+                        if (data.level === 'ELITE MEMBER') {
+                            setIsElite(true);
+                        } else {
+                            setIsElite(false);
+                        }
+                    } else {
+                        setIsElite(false);
+                    }
                 } else {
                     setIsElite(false);
                 }
@@ -59,6 +72,12 @@ export default function ElitePage() {
     const handleJoinRequest = async (e: React.FormEvent) => {
         e.preventDefault();
         try {
+            const userEmail = localStorage.getItem('user_email');
+            if (!userEmail) {
+                alert('Please sign in first to apply.');
+                return;
+            }
+
             const res = await fetch('/api/support', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -66,7 +85,8 @@ export default function ElitePage() {
                     name: formData.name,
                     phone: formData.phone,
                     type: 'ELITE_REQUEST',
-                    email: 'yashu@cloutclub.com',
+                    email: userEmail,
+                    reason: 'Elite Membership Request',
                     message: `ELITE_REQUEST: Join Elite Program Request from ${formData.name} (${formData.phone})`
                 })
             });
@@ -120,7 +140,7 @@ export default function ElitePage() {
                             )}
                         </div>
                     ) : (
-                        (config.elitePage.sections).map((section: any) => (
+                        (config?.elitePage?.sections || []).map((section: any) => (
                             <div key={section.id} className={styles.sectionBlock}>
                                 <h2 className={styles.sectionTitle}>{section.title}</h2>
                                 <div className={styles.eliteGrid}>

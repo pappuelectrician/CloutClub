@@ -41,6 +41,8 @@ CREATE TABLE support (
   id TEXT PRIMARY KEY,
   name TEXT NOT NULL,
   email TEXT NOT NULL,
+  phone TEXT,
+  reason TEXT,
   message TEXT NOT NULL,
   status TEXT DEFAULT 'open',
   "createdAt" TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
@@ -73,6 +75,7 @@ CREATE POLICY "Admin All Access" ON site_config FOR ALL USING (true);
 
 ALTER TABLE users ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Public Read Access" ON users FOR SELECT USING (true);
+CREATE POLICY "Public Insert Access" ON users FOR INSERT WITH CHECK (true);
 CREATE POLICY "Admin All Access" ON users FOR ALL USING (true);
 
 -- STORAGE BUCKET

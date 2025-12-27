@@ -7,7 +7,7 @@ import { Mail, Lock, User, ArrowRight } from 'lucide-react';
 import styles from './Auth.module.css';
 
 export default function SignupPage() {
-    const [formData, setFormData] = useState({ name: '', email: '', password: '' });
+    const [formData, setFormData] = useState({ name: '', email: '', phone: '', password: '' });
 
     return (
         <div className={styles.container}>
@@ -27,13 +27,15 @@ export default function SignupPage() {
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({
                                 email: formData.email,
-                                name: formData.name
+                                name: formData.name,
+                                phone: formData.phone
                             })
                         });
 
                         if (res.ok) {
                             localStorage.setItem('user_email', formData.email);
                             localStorage.setItem('user_name', formData.name);
+                            localStorage.setItem('user_phone', formData.phone);
                             window.location.href = '/account';
                         } else {
                             const errorData = await res.json();
@@ -62,6 +64,18 @@ export default function SignupPage() {
                             required
                             value={formData.email}
                             onChange={e => setFormData({ ...formData, email: e.target.value })}
+                        />
+                    </div>
+                    <div className={styles.inputWrapper}>
+                        <Mail size={18} className={styles.icon} style={{ opacity: 0 }} />
+                        <span style={{ position: 'absolute', left: '15px', top: '50%', transform: 'translateY(-50%)', opacity: 0.6 }}>+91</span>
+                        <input
+                            type="tel"
+                            placeholder="PHONE NUMBER"
+                            required
+                            style={{ paddingLeft: '50px' }}
+                            value={formData.phone}
+                            onChange={e => setFormData({ ...formData, phone: e.target.value })}
                         />
                     </div>
                     <div className={styles.inputWrapper}>
