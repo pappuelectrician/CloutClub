@@ -1,0 +1,260 @@
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(20px);
+    z-index: 3000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px;
+}
+
+.modal {
+    background: rgba(15, 15, 15, 0.8);
+    width: 100%;
+    max-width: 1200px;
+    border-radius: 40px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    overflow: hidden;
+    position: relative;
+    max-height: 85vh;
+    display: flex;
+    box-shadow: 0 50px 100px rgba(0, 0, 0, 0.5), 0 0 100px rgba(0, 242, 255, 0.1);
+}
+
+.closeBtn {
+    position: absolute;
+    top: 30px;
+    right: 30px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #fff;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 100;
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.closeBtn:hover {
+    background: #fff;
+    color: #000;
+    transform: rotate(90deg);
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: 1.1fr 0.9fr;
+    width: 100%;
+}
+
+.imageSection {
+    background: #000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+    border-right: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.imageSection::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to right, transparent, rgba(0, 0, 0, 0.2));
+    pointer-events: none;
+}
+
+.imageSection img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    padding: 20px;
+    padding-bottom: 120px;
+}
+
+.thumbnailStrip {
+    position: absolute;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 12px;
+    padding: 10px;
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    z-index: 10;
+    max-width: 80%;
+    overflow-x: auto;
+}
+
+.thumbnail {
+    width: 60px;
+    height: 60px;
+    border-radius: 12px;
+    overflow: hidden;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: all 0.3s ease;
+    flex-shrink: 0;
+}
+
+.thumbnail img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    padding: 0;
+}
+
+.activeThumbnail {
+    border-color: var(--primary);
+    transform: scale(1.1);
+}
+
+.infoSection {
+    padding: 80px 60px;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    background: linear-gradient(135deg, rgba(20, 20, 20, 0.4), rgba(10, 10, 10, 0.4));
+}
+
+.category {
+    font-size: 0.75rem;
+    font-weight: 900;
+    color: var(--primary);
+    letter-spacing: 0.4em;
+    margin-bottom: 20px;
+}
+
+.name {
+    font-size: 3.5rem;
+    margin-bottom: 10px;
+    line-height: 1;
+    font-weight: 900;
+    letter-spacing: -0.02em;
+}
+
+.price {
+    font-size: 2.5rem;
+    font-weight: 200;
+    margin-bottom: 40px;
+    opacity: 0.9;
+}
+
+.description {
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 0.95rem;
+    line-height: 1.6;
+    margin-bottom: 40px;
+}
+
+.optionGroup {
+    margin-bottom: 30px;
+}
+
+.optionGroup label {
+    display: block;
+    font-size: 0.7rem;
+    font-weight: 800;
+    margin-bottom: 15px;
+    opacity: 0.4;
+    letter-spacing: 0.1em;
+}
+
+.optionGrid {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.optionGrid button {
+    padding: 10px 20px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    color: #fff;
+    font-weight: 700;
+    font-size: 0.85rem;
+    transition: all 0.3s ease;
+}
+
+.optionGrid button:hover {
+    border-color: var(--primary);
+    background: rgba(255, 255, 255, 0.06);
+}
+
+.activeOption {
+    background: var(--primary) !important;
+    color: #000 !important;
+    border-color: var(--primary) !important;
+}
+
+.addBtn {
+    margin-top: auto;
+    background: #fff;
+    color: #000;
+    padding: 22px;
+    border-radius: 100px;
+    font-weight: 950;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+    transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    border: none;
+    cursor: pointer;
+}
+
+.addBtn:hover {
+    transform: translateY(-5px) scale(1.02);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4), 0 0 20px rgba(255, 255, 255, 0.1);
+}
+
+.addBtn:active {
+    transform: translateY(0) scale(0.98);
+}
+
+.addBtn:disabled {
+    background: var(--primary);
+    color: #000;
+    transform: none;
+    box-shadow: none;
+}
+
+@media (max-width: 900px) {
+    .modal {
+        flex-direction: column;
+        max-height: 95vh;
+    }
+
+    .grid {
+        grid-template-columns: 1fr;
+    }
+
+    .imageSection {
+        height: 300px;
+    }
+
+    .infoSection {
+        padding: 30px;
+    }
+
+    .name {
+        font-size: 2rem;
+    }
+}

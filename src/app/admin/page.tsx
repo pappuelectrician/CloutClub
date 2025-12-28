@@ -22,6 +22,8 @@ export default function AdminPage() {
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
     const [editingOrder, setEditingOrder] = useState<any>(null);
     const [editingProduct, setEditingProduct] = useState<any>(null);
+    const [viewingUserOrders, setViewingUserOrders] = useState<any>(null);
+    const [editingUserInfo, setEditingUserInfo] = useState<any>(null);
     const [selectingForSection, setSelectingForSection] = useState<{ id: string, page: string } | null>(null);
 
     // Custom UI states
@@ -53,7 +55,8 @@ export default function AdminPage() {
         stock: '',
         sizes: 'S, M, L, XL',
         description: '',
-        imageUrl: '',
+        images: [] as string[],
+        colors: [] as string[],
         isTrending: false,
         isLimited: false
     });
@@ -151,9 +154,15 @@ export default function AdminPage() {
             if (data.url) {
                 if (type === 'product') {
                     if (editingProduct) {
-                        setEditingProduct((prev: any) => prev ? { ...prev, images: [data.url] } : null);
+                        setEditingProduct((prev: any) => ({
+                            ...prev,
+                            images: Array.isArray(prev.images) ? [...prev.images, data.url] : [data.url]
+                        }));
                     } else {
-                        setNewProduct((prev: any) => ({ ...prev, imageUrl: data.url }));
+                        setNewProduct((prev: any) => ({
+                            ...prev,
+                            images: [...prev.images, data.url]
+                        }));
                     }
                 } else if (type === 'config') {
                     setConfig((prev: any) => ({ ...prev, hero: { ...prev.hero, image: data.url } }));
@@ -200,6 +209,29 @@ export default function AdminPage() {
             if (res.ok) fetchData();
         } catch (err) {
             console.error('Failed to toggle elite status');
+        }
+    };
+
+    const handleUpdateUserInfo = async (userData: any) => {
+        try {
+            const res = await fetch('/api/users', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    action: 'updateProfile',
+                    email: userData.email,
+                    name: userData.name,
+                    phone: userData.phone,
+                    level: userData.level
+                })
+            });
+            if (res.ok) {
+                setEditingUserInfo(null);
+                fetchData();
+                showToast('User information updated');
+            }
+        } catch (err) {
+            showToast('Failed to update user information', 'error');
         }
     };
 
@@ -295,7 +327,7 @@ export default function AdminPage() {
                     id: `PROD-${Date.now()}`,
                     price: parseFloat(newProduct.price),
                     stock: parseInt(newProduct.stock) || 0,
-                    images: [newProduct.imageUrl]
+                    images: newProduct.images
                 })
             });
             if (res.ok) {
@@ -579,11 +611,20 @@ export default function AdminPage() {
 
                             <div className={styles.eliteGrid}>
                                 {eliteMembers.map(u => (
-                                    <div key={u.email} className={styles.eliteCard}>
-                                        <ShieldCheck size={24} color="var(--primary)" />
+                                    <div key={u.email} className={styles.eliteCard} onClick={() => setViewingUserOrders(u)}>
+                                        <div className={styles.eliteHeader}>
+                                            <ShieldCheck size={24} color="var(--primary)" />
+                                            <button
+                                                className={styles.miniEditBtn}
+                                                onClick={(e) => { e.stopPropagation(); setEditingUserInfo(u); }}
+                                                title="Edit User Info"
+                                            >
+                                                <Edit size={14} />
+                                            </button>
+                                        </div>
                                         <h4>{u.name}</h4>
                                         <p>{u.email}</p>
-                                        <button className={styles.revokeBtn} onClick={() => toggleEliteStatus(u.email)}>
+                                        <button className={styles.revokeBtn} onClick={(e) => { e.stopPropagation(); toggleEliteStatus(u.email); }}>
                                             REVOKE ELITE STATUS
                                         </button>
                                     </div>
@@ -605,7 +646,7 @@ export default function AdminPage() {
                                     </thead>
                                     <tbody>
                                         {users.map((u: any) => (
-                                            <tr key={u.email}>
+                                            <tr key={u.email} className={styles.userRow} onClick={() => setViewingUserOrders(u)}>
                                                 <td>{u.name}</td>
                                                 <td>{u.email}</td>
                                                 <td>
@@ -614,13 +655,22 @@ export default function AdminPage() {
                                                     </span>
                                                 </td>
                                                 <td>
-                                                    <button
-                                                        className={styles.toggleEliteBtn}
-                                                        onClick={() => toggleEliteStatus(u.email)}
-                                                    >
-                                                        {u.isElite ? <ShieldAlert size={16} /> : <ShieldCheck size={16} />}
-                                                        {u.isElite ? 'REVOKE' : 'GRANT ELITE'}
-                                                    </button>
+                                                    <div className={styles.actions}>
+                                                        <button
+                                                            className={styles.toggleEliteBtn}
+                                                            onClick={(e) => { e.stopPropagation(); toggleEliteStatus(u.email); }}
+                                                        >
+                                                            {u.isElite ? <ShieldAlert size={16} /> : <ShieldCheck size={16} />}
+                                                            {u.isElite ? 'REVOKE' : 'GRANT'}
+                                                        </button>
+                                                        <button
+                                                            className={styles.editBtn}
+                                                            onClick={(e) => { e.stopPropagation(); setEditingUserInfo(u); }}
+                                                            title="Edit User Info"
+                                                        >
+                                                            <Edit size={16} />
+                                                        </button>
+                                                    </div>
                                                 </td>
                                             </tr>
                                         ))}
@@ -653,6 +703,16 @@ export default function AdminPage() {
                                     <div className={styles.inputGroup}>
                                         <label>PROMO BANNER TEXT</label>
                                         <input value={config.promo.bannerText} onChange={(e) => setConfig({ ...config, promo: { ...config.promo, bannerText: e.target.value } })} />
+                                    </div>
+                                    <div className={styles.inputGroup}>
+                                        <label className={styles.checkboxLabel}>
+                                            <input
+                                                type="checkbox"
+                                                checked={config.promo.active}
+                                                onChange={(e) => setConfig({ ...config, promo: { ...config.promo, active: e.target.checked } })}
+                                            />
+                                            <span>ENABLE PROMO BANNER</span>
+                                        </label>
                                     </div>
                                 </div>
 
@@ -1269,15 +1329,73 @@ export default function AdminPage() {
                                         />
                                     </div>
                                     <div className={styles.inputGroup}>
-                                        <label>IMAGE ASSET</label>
+                                        <label>SIZE OPTIONS (COMMA SEPARATED)</label>
+                                        <input
+                                            type="text"
+                                            placeholder="e.g. S, M, L, XL or CUSTOM"
+                                            value={editingProduct.sizes}
+                                            onChange={(e) => setEditingProduct({ ...editingProduct, sizes: e.target.value })}
+                                        />
+                                    </div>
+                                    <div className={styles.inputGroup}>
+                                        <label>COLOR OPTIONS</label>
+                                        <div className={styles.colorBubbles}>
+                                            {['BLACK', 'WHITE', 'CHARCOAL', 'NEON GREEN', 'ELECTRIC BLUE', 'CYBER PINK', 'RED', 'ORANGE'].map(color => (
+                                                <button
+                                                    key={color}
+                                                    className={`${styles.colorBubble} ${Array.isArray(editingProduct.colors) && editingProduct.colors.includes(color) ? styles.colorBubbleActive : ''}`}
+                                                    onClick={() => {
+                                                        const current = Array.isArray(editingProduct.colors) ? editingProduct.colors : [];
+                                                        const next = current.includes(color)
+                                                            ? current.filter(c => c !== color)
+                                                            : [...current, color];
+                                                        setEditingProduct({ ...editingProduct, colors: next });
+                                                    }}
+                                                >
+                                                    {color}
+                                                </button>
+                                            ))}
+                                        </div>
+                                        <input
+                                            type="text"
+                                            placeholder="CUSTOM COLORS (COMMA SEPARATED)"
+                                            style={{ marginTop: 10 }}
+                                            value={Array.isArray(editingProduct.colors) ? editingProduct.colors.filter(c => !['BLACK', 'WHITE', 'CHARCOAL', 'NEON GREEN', 'ELECTRIC BLUE', 'CYBER PINK', 'RED', 'ORANGE'].includes(c)).join(', ') : ''}
+                                            onChange={(e) => {
+                                                const custom = e.target.value.split(',').map(s => s.trim()).filter(Boolean);
+                                                const presets = Array.isArray(editingProduct.colors) ? editingProduct.colors.filter(c => ['BLACK', 'WHITE', 'CHARCOAL', 'NEON GREEN', 'ELECTRIC BLUE', 'CYBER PINK', 'RED', 'ORANGE'].includes(c)) : [];
+                                                setEditingProduct({ ...editingProduct, colors: [...presets, ...custom] });
+                                            }}
+                                        />
+                                    </div>
+                                    <div className={styles.inputGroup}>
+                                        <label>IMAGE ASSETS</label>
+                                        <div className={styles.imageStrip}>
+                                            {(editingProduct.images || []).map((img: string, idx: number) => (
+                                                <div key={idx} className={styles.stripImgContainer}>
+                                                    <img src={img} alt="" />
+                                                    <button className={styles.removeImgBtn} onClick={() => {
+                                                        const next = editingProduct.images.filter((_: any, i: number) => i !== idx);
+                                                        setEditingProduct({ ...editingProduct, images: next });
+                                                    }}>×</button>
+                                                </div>
+                                            ))}
+                                        </div>
                                         <div style={{ display: 'flex', gap: 10 }}>
                                             <div className={styles.urlInput} style={{ flex: 1 }}>
                                                 <ImageIcon size={18} />
                                                 <input
                                                     type="text"
-                                                    placeholder="URL or Uploaded Link"
-                                                    value={editingProduct.images?.[0] || ''}
-                                                    onChange={(e) => setEditingProduct({ ...editingProduct, images: [e.target.value] })}
+                                                    placeholder="Add Image URL"
+                                                    onKeyDown={(e) => {
+                                                        if (e.key === 'Enter') {
+                                                            const val = (e.currentTarget as HTMLInputElement).value;
+                                                            if (val) {
+                                                                setEditingProduct({ ...editingProduct, images: [...(editingProduct.images || []), val] });
+                                                                (e.currentTarget as HTMLInputElement).value = '';
+                                                            }
+                                                        }
+                                                    }}
                                                 />
                                             </div>
                                             <label className={styles.uploadBtn}>
@@ -1315,16 +1433,19 @@ export default function AdminPage() {
                                 </div>
 
                                 <div className={styles.modalPreview}>
-                                    <label>PREVIEW</label>
+                                    <label>ASSET PREVIEW</label>
                                     <div className={styles.previewCard}>
-                                        {editingProduct.images?.[0] ? (
-                                            <img src={editingProduct.images[0]} alt="Preview" />
-                                        ) : (
-                                            <div className={styles.previewPlaceholder}>
-                                                <ImageIcon size={40} />
-                                                <p>IMAGE PREVIEW</p>
-                                            </div>
-                                        )}
+                                        <div className={styles.imageGridPreview}>
+                                            {(editingProduct.images || []).map((img: string, idx: number) => (
+                                                <img key={idx} src={img} alt="Preview" />
+                                            ))}
+                                            {(editingProduct.images || []).length === 0 && (
+                                                <div className={styles.previewPlaceholder}>
+                                                    <ImageIcon size={40} />
+                                                    <p>NO IMAGES</p>
+                                                </div>
+                                            )}
+                                        </div>
                                         <div className={styles.previewInfo}>
                                             <h4>{editingProduct.name || 'PRODUCT NAME'}</h4>
                                             <span>₹{editingProduct.price || '0'}</span>
@@ -1412,15 +1533,72 @@ export default function AdminPage() {
                                         />
                                     </div>
                                     <div className={styles.inputGroup}>
-                                        <label>IMAGE ASSET</label>
+                                        <label>SIZE OPTIONS (COMMA SEPARATED)</label>
+                                        <input
+                                            type="text"
+                                            placeholder="e.g. S, M, L, XL or INFANT, PET"
+                                            value={newProduct.sizes}
+                                            onChange={(e) => setNewProduct({ ...newProduct, sizes: e.target.value })}
+                                        />
+                                    </div>
+                                    <div className={styles.inputGroup}>
+                                        <label>COLOR OPTIONS</label>
+                                        <div className={styles.colorBubbles}>
+                                            {['BLACK', 'WHITE', 'CHARCOAL', 'NEON GREEN', 'ELECTRIC BLUE', 'CYBER PINK', 'RED', 'ORANGE'].map(color => (
+                                                <button
+                                                    key={color}
+                                                    className={`${styles.colorBubble} ${newProduct.colors.includes(color) ? styles.colorBubbleActive : ''}`}
+                                                    onClick={() => {
+                                                        const next = newProduct.colors.includes(color)
+                                                            ? newProduct.colors.filter(c => c !== color)
+                                                            : [...newProduct.colors, color];
+                                                        setNewProduct({ ...newProduct, colors: next });
+                                                    }}
+                                                >
+                                                    {color}
+                                                </button>
+                                            ))}
+                                        </div>
+                                        <input
+                                            type="text"
+                                            placeholder="CUSTOM COLORS (COMMA SEPARATED)"
+                                            style={{ marginTop: 10 }}
+                                            value={newProduct.colors.filter(c => !['BLACK', 'WHITE', 'CHARCOAL', 'NEON GREEN', 'ELECTRIC BLUE', 'CYBER PINK', 'RED', 'ORANGE'].includes(c)).join(', ')}
+                                            onChange={(e) => {
+                                                const custom = e.target.value.split(',').map(s => s.trim()).filter(Boolean);
+                                                const presets = newProduct.colors.filter(c => ['BLACK', 'WHITE', 'CHARCOAL', 'NEON GREEN', 'ELECTRIC BLUE', 'CYBER PINK', 'RED', 'ORANGE'].includes(c));
+                                                setNewProduct({ ...newProduct, colors: [...presets, ...custom] });
+                                            }}
+                                        />
+                                    </div>
+                                    <div className={styles.inputGroup}>
+                                        <label>IMAGE ASSETS</label>
+                                        <div className={styles.imageStrip}>
+                                            {newProduct.images.map((img, idx) => (
+                                                <div key={idx} className={styles.stripImgContainer}>
+                                                    <img src={img} alt="" />
+                                                    <button className={styles.removeImgBtn} onClick={() => {
+                                                        const next = newProduct.images.filter((_, i) => i !== idx);
+                                                        setNewProduct({ ...newProduct, images: next });
+                                                    }}>×</button>
+                                                </div>
+                                            ))}
+                                        </div>
                                         <div style={{ display: 'flex', gap: 10 }}>
                                             <div className={styles.urlInput} style={{ flex: 1 }}>
                                                 <ImageIcon size={18} />
                                                 <input
                                                     type="text"
-                                                    placeholder="URL or Uploaded Link"
-                                                    value={newProduct.imageUrl}
-                                                    onChange={(e) => setNewProduct({ ...newProduct, imageUrl: e.target.value })}
+                                                    placeholder="Add Image URL"
+                                                    onKeyDown={(e) => {
+                                                        if (e.key === 'Enter') {
+                                                            const val = (e.currentTarget as HTMLInputElement).value;
+                                                            if (val) {
+                                                                setNewProduct({ ...newProduct, images: [...newProduct.images, val] });
+                                                                (e.currentTarget as HTMLInputElement).value = '';
+                                                            }
+                                                        }
+                                                    }}
                                                 />
                                             </div>
                                             <label className={styles.uploadBtn}>
@@ -1459,16 +1637,19 @@ export default function AdminPage() {
                                 </div>
 
                                 <div className={styles.modalPreview}>
-                                    <label>PREVIEW</label>
+                                    <label>ASSET PREVIEW</label>
                                     <div className={styles.previewCard}>
-                                        {newProduct.imageUrl ? (
-                                            <img src={newProduct.imageUrl} alt="Preview" />
-                                        ) : (
-                                            <div className={styles.previewPlaceholder}>
-                                                <ImageIcon size={40} />
-                                                <p>IMAGE PREVIEW</p>
-                                            </div>
-                                        )}
+                                        <div className={styles.imageGridPreview}>
+                                            {newProduct.images.map((img, idx) => (
+                                                <img key={idx} src={img} alt="Preview" />
+                                            ))}
+                                            {newProduct.images.length === 0 && (
+                                                <div className={styles.previewPlaceholder}>
+                                                    <ImageIcon size={40} />
+                                                    <p>NO IMAGES</p>
+                                                </div>
+                                            )}
+                                        </div>
                                         <div className={styles.previewInfo}>
                                             <h4>{newProduct.name || 'PRODUCT NAME'}</h4>
                                             <span>₹{newProduct.price || '0'}</span>
@@ -1484,6 +1665,117 @@ export default function AdminPage() {
                                 <button className={styles.releaseBtn} onClick={handleAddProduct}>
                                     <Plus size={18} /> RELEASE PRODUCT
                                 </button>
+                            </div>
+                        </motion.div>
+                    </div>
+                )}
+            </AnimatePresence>
+
+            {/* VIEW USER ORDERS MODAL */}
+            <AnimatePresence>
+                {viewingUserOrders && (
+                    <div className={styles.modalOverlay} onClick={() => setViewingUserOrders(null)}>
+                        <motion.div
+                            className={styles.modal}
+                            onClick={e => e.stopPropagation()}
+                            initial={{ scale: 0.9, opacity: 0 }}
+                            animate={{ scale: 1, opacity: 1 }}
+                            exit={{ scale: 0.9, opacity: 0 }}
+                        >
+                            <div className={styles.modalHeader}>
+                                <div>
+                                    <h2 style={{ fontSize: '1.2rem' }}>ORDERS: {viewingUserOrders.name}</h2>
+                                    <p style={{ opacity: 0.5, fontSize: '0.8rem' }}>{viewingUserOrders.email}</p>
+                                </div>
+                                <button className={styles.closeBtn} onClick={() => setViewingUserOrders(null)}><X /></button>
+                            </div>
+                            <div className={styles.modalContent} style={{ maxHeight: '60vh', overflowY: 'auto', padding: '10px' }}>
+                                {orders.filter(o => o.customer.email === viewingUserOrders.email).length === 0 ? (
+                                    <div className={styles.empty}>NO ORDERS FOUND FOR THIS USER</div>
+                                ) : (
+                                    <div className={styles.ordersCompactGrid}>
+                                        {orders.filter(o => o.customer.email === viewingUserOrders.email).map((order: any) => (
+                                            <div key={order.id} className={styles.orderTileCompact}>
+                                                <div className={styles.orderHead}>
+                                                    <span className={styles.orderId}>{order.id}</span>
+                                                    <span className={`${styles.orderStatusBadge} ${styles['status_' + order.status]}`}>
+                                                        {order.status}
+                                                    </span>
+                                                </div>
+                                                <div className={styles.orderFooterTile}>
+                                                    <span>₹{order.total}</span>
+                                                    <span style={{ fontSize: '0.7rem', opacity: 0.5 }}>{new Date(order.createdAt).toLocaleDateString()}</span>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
+                        </motion.div>
+                    </div>
+                )}
+            </AnimatePresence>
+
+            {/* EDIT USER INFO MODAL */}
+            <AnimatePresence>
+                {editingUserInfo && (
+                    <div className={styles.modalOverlay}>
+                        <motion.div
+                            className={styles.modal}
+                            initial={{ scale: 0.9, opacity: 0 }}
+                            animate={{ scale: 1, opacity: 1 }}
+                            exit={{ scale: 0.9, opacity: 0 }}
+                        >
+                            <div className={styles.modalHeader}>
+                                <h2>EDIT USER INFO</h2>
+                                <button className={styles.closeBtn} onClick={() => setEditingUserInfo(null)}><X /></button>
+                            </div>
+                            <div className={styles.modalForm}>
+                                <div className={styles.inputGroup}>
+                                    <label>FULL NAME</label>
+                                    <input
+                                        value={editingUserInfo.name}
+                                        onChange={(e) => setEditingUserInfo({ ...editingUserInfo, name: e.target.value })}
+                                    />
+                                </div>
+                                <div className={styles.inputGroup}>
+                                    <label>PHONE NUMBER</label>
+                                    <input
+                                        value={editingUserInfo.phone || ''}
+                                        onChange={(e) => setEditingUserInfo({ ...editingUserInfo, phone: e.target.value })}
+                                        placeholder="No phone number set"
+                                    />
+                                </div>
+                                <div className={styles.inputGroup}>
+                                    <label>MEMBERSHIP LEVEL</label>
+                                    <select
+                                        value={editingUserInfo.level || 'BASIC MEMBER'}
+                                        onChange={(e) => setEditingUserInfo({ ...editingUserInfo, level: e.target.value })}
+                                        className={styles.statusSelect}
+                                        style={{ width: '100%', padding: '12px' }}
+                                    >
+                                        <option value="BASIC MEMBER">BASIC MEMBER</option>
+                                        <option value="ELITE MEMBER">ELITE MEMBER</option>
+                                        <option value="ALLIED MEMBER">ALLIED MEMBER</option>
+                                        <option value="ADMIN">ADMIN</option>
+                                    </select>
+                                </div>
+                                <div className={styles.inputGroup}>
+                                    <label>EMAIL (READ-ONLY)</label>
+                                    <input
+                                        value={editingUserInfo.email}
+                                        disabled
+                                        style={{ opacity: 0.5 }}
+                                    />
+                                </div>
+                                <div style={{ display: 'flex', gap: 10, marginTop: 20 }}>
+                                    <button className={styles.saveBtn} style={{ flex: 2, padding: '12px' }} onClick={() => handleUpdateUserInfo(editingUserInfo)}>
+                                        SAVE CHANGES
+                                    </button>
+                                    <button className={styles.backBtnModal} style={{ flex: 1 }} onClick={() => setEditingUserInfo(null)}>
+                                        CANCEL
+                                    </button>
+                                </div>
                             </div>
                         </motion.div>
                     </div>

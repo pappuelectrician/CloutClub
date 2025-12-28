@@ -4,13 +4,25 @@
     overflow: hidden;
     border: 1px solid rgba(255, 255, 255, 0.05);
     transition: all 0.3s ease;
+    cursor: pointer;
 }
 
 .imageWrapper {
-    height: 300px;
+    height: 350px;
     background: #111;
     position: relative;
     overflow: hidden;
+}
+
+.productImg {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+}
+
+.card:hover .productImg {
+    transform: scale(1.1);
 }
 
 .placeholderImg {
@@ -98,4 +110,38 @@
     font-size: 0.6rem;
     font-weight: 800;
     opacity: 0.5;
+}
+
+.trendingRibbon {
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    background: #ff4d00;
+    color: #fff;
+    padding: 6px 12px;
+    border-radius: 40px;
+    font-size: 0.6rem;
+    font-weight: 900;
+    z-index: 5;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    box-shadow: 0 4px 15px rgba(255, 77, 0, 0.4);
+}
+
+.limitedTag {
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    background: #facc15;
+    color: #000;
+    padding: 6px 12px;
+    border-radius: 40px;
+    font-size: 0.6rem;
+    font-weight: 900;
+    z-index: 5;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    box-shadow: 0 4px 15px rgba(250, 204, 21, 0.3);
 }

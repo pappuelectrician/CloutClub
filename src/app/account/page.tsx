@@ -376,7 +376,8 @@ export default function AccountPage() {
 
                                     <form className={styles.supportForm} onSubmit={async (e) => {
                                         e.preventDefault();
-                                        const formData = new FormData(e.currentTarget);
+                                        const form = e.currentTarget;
+                                        const formData = new FormData(form);
                                         const topic = formData.get('topic');
                                         const description = formData.get('description');
                                         const phone = formData.get('phone');
@@ -398,12 +399,13 @@ export default function AccountPage() {
 
                                             if (res.ok) {
                                                 showToast('Enquiry submitted successfully!');
-                                                e.currentTarget.reset();
+                                                form.reset();
                                             } else {
-                                                showToast('Failed to submit enquiry.', 'error');
+                                                const errorData = await res.json();
+                                                showToast(errorData.details || errorData.error || 'Failed to submit enquiry.', 'error');
                                             }
-                                        } catch (err) {
-                                            showToast('Failed to submit enquiry.', 'error');
+                                        } catch (err: any) {
+                                            showToast(err.message || 'Failed to submit enquiry.', 'error');
                                         }
                                     }}>
                                         <div className={styles.inputGroup}>

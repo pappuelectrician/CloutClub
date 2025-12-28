@@ -16,19 +16,27 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
+    if (!supabase) {
+        return NextResponse.json({
+            error: 'DATABASE NOT CONFIGURED',
+            details: 'Supabase URL or Anon Key is missing in environment variables.'
+        }, { status: 500 });
+    }
+
     try {
         const body = await request.json();
         const id = `SUP-${Date.now()}`;
 
-        // We use an object with all potential column names to be safe
-        const insertData = {
+        // Prepare the data with all relevant fields
+        const insertData: any = {
             id: id,
             name: body.name || body.customerName || 'Anonymous',
             email: body.email || body.customerEmail || 'no-email@cloutclub.com',
             phone: body.phone || '',
             reason: body.reason || 'Support',
             message: body.message,
-            status: 'pending' // Matches existing data
+            status: 'pending',
+            createdAt: new Date().toISOString()
         };
 
         const { error } = await supabase
@@ -37,16 +45,37 @@ export async function POST(request: Request) {
 
         if (error) {
             console.error('SUPABASE SUPPORT ERROR:', error);
+
+            // 1. Handle UUID mismatch (Code 22P02)
+            if (error.code === '22P02') {
+                const { id, ...rest } = insertData;
+                const { error: retryError } = await supabase.from('support').insert([rest]);
+                if (!retryError) return NextResponse.json({ success: true });
+                throw retryError;
+            }
+
+            // 2. Handle Schema mismatch (Code 42703 - Column doesn't exist)
+            if (error.code === '42703' || error.message.toLowerCase().includes('column')) {
+                return NextResponse.json({
+                    error: 'DATABASE SCHEMA MISMATCH',
+                    details: error.message
+                }, { status: 500 });
+            }
+
             return NextResponse.json({
                 error: error.message,
-                details: error.details
+                details: error.details,
+                code: error.code
             }, { status: 500 });
         }
 
         return NextResponse.json({ success: true, id });
     } catch (error: any) {
         console.error('SUPPORT API CATCH:', error);
-        return NextResponse.json({ error: error.message || 'Failed to submit support request' }, { status: 500 });
+        return NextResponse.json({
+            error: 'Failed to submit support request',
+            details: error.message || 'Unknown error'
+        }, { status: 500 });
     }
 }
 

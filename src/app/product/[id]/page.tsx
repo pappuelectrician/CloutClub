@@ -13,7 +13,9 @@ export default function ProductDetail() {
     const { addToCart } = useCart();
     const [product, setProduct] = useState<any>(null);
     const [config, setConfig] = useState<any>(null);
+    const [selectedSize, setSelectedSize] = useState('');
     const [selectedColor, setSelectedColor] = useState('');
+    const [currentImageIndex, setCurrentImageIndex] = useState(0);
     const [loading, setLoading] = useState(true);
     const [adding, setAdding] = useState(false);
 
@@ -23,10 +25,20 @@ export default function ProductDetail() {
             fetch('/api/config').then(res => res.json())
         ]).then(([prodData, configData]) => {
             const p = prodData.find((item: any) => item.id === id);
-            setProduct(p);
-            setConfig(configData);
             if (p) {
-                setSelectedColor(p.colors[0]);
+                const colors = Array.isArray(p.colors)
+                    ? p.colors
+                    : (typeof p.colors === 'string' ? p.colors.split(',').map(c => c.trim()) : []);
+
+                const sizes = p.sizes?.split(',').map((s: string) => s.trim()) || [];
+
+                const processedProduct = { ...p, colors, sizeList: sizes };
+                setProduct(processedProduct);
+                setConfig(configData);
+
+                if (colors.length > 0) setSelectedColor(colors[0]);
+                if (sizes.length > 0) setSelectedSize(sizes[0]);
+                setCurrentImageIndex(0);
             }
             setLoading(false);
         });
@@ -42,9 +54,9 @@ export default function ProductDetail() {
             name: product.name,
             price: product.price,
             quantity: 1,
-            size: product.sizes.split(',')[0].trim(),
+            size: selectedSize,
             color: selectedColor,
-            image: product.images[0]
+            image: product.images?.[currentImageIndex] || product.images?.[0] || ''
         });
         setTimeout(() => setAdding(false), 1000);
     };
@@ -62,8 +74,32 @@ export default function ProductDetail() {
                     animate={{ opacity: 1, x: 0 }}
                 >
                     <div className={styles.mainImage}>
-                        <div className={styles.placeholderImg}>{product.name.charAt(0)}</div>
+                        {product.images?.[currentImageIndex] ? (
+                            <motion.img
+                                key={currentImageIndex}
+                                src={product.images[currentImageIndex]}
+                                alt={product.name}
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                            />
+                        ) : (
+                            <div className={styles.placeholderImg}>{product.name.charAt(0)}</div>
+                        )}
                     </div>
+
+                    {product.images && product.images.length > 1 && (
+                        <div className={styles.thumbnailStrip}>
+                            {product.images.map((img: string, idx: number) => (
+                                <div
+                                    key={idx}
+                                    className={`${styles.thumbnail} ${currentImageIndex === idx ? styles.activeThumbnail : ''}`}
+                                    onClick={() => setCurrentImageIndex(idx)}
+                                >
+                                    <img src={img} alt="" />
+                                </div>
+                            ))}
+                        </div>
+                    )}
                 </motion.div>
 
                 <motion.div
@@ -81,9 +117,17 @@ export default function ProductDetail() {
 
                     <div className={styles.options}>
                         <div className={styles.optionGroup}>
-                            <label>AVAILABLE SIZES</label>
-                            <div className={styles.sizeText}>
-                                {product.sizes}
+                            <label>SELECT SIZE</label>
+                            <div className={styles.sizeGrid}>
+                                {product.sizeList.map((size: string) => (
+                                    <button
+                                        key={size}
+                                        className={selectedSize === size ? styles.activeOption : ''}
+                                        onClick={() => setSelectedSize(size)}
+                                    >
+                                        {size}
+                                    </button>
+                                ))}
                             </div>
                         </div>
 
@@ -108,9 +152,9 @@ export default function ProductDetail() {
                         onClick={handleAddToCart}
                         disabled={adding}
                     >
-                        {adding ? config.labels.addingToBag : (
+                        {adding ? (config.labels?.addingToBag || 'ADDING...') : (
                             <>
-                                {config.labels.addToBag} <ShoppingBag size={20} />
+                                {(config.labels?.addToBag || 'ADD TO BAG')} <ShoppingBag size={20} />
                             </>
                         )}
                     </button>

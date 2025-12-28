@@ -1304,3 +1304,163 @@
     padding: 5px 12px;
     border-radius: 10px;
 }
+
+.userRow {
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.userRow:hover {
+    background: rgba(255, 255, 255, 0.03);
+}
+
+.eliteHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 10px;
+}
+
+.miniEditBtn {
+    width: 30px;
+    height: 30px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: rgba(255, 255, 255, 0.6);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.miniEditBtn:hover {
+    background: var(--primary);
+    color: #000;
+    border-color: var(--primary);
+}
+
+.eliteCard {
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.eliteCard:hover {
+    transform: translateY(-5px);
+    border-color: var(--primary);
+    background: rgba(0, 242, 255, 0.05);
+}
+
+.ordersCompactGrid {
+    display: grid;
+    gap: 15px;
+}
+
+.orderTileCompact {
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    padding: 15px;
+    border-radius: 15px;
+}
+
+.orderTileCompact .orderId {
+    font-size: 0.8rem;
+}
+
+.orderTileCompact .orderHead {
+    margin-bottom: 10px;
+}
+
+.orderTileCompact .orderFooterTile {
+    margin-top: 10px;
+    padding-top: 10px;
+    font-size: 0.9rem;
+}
+
+/* Multi-image & Color Presets */
+.imageStrip {
+    display: flex;
+    gap: 10px;
+    overflow-x: auto;
+    padding: 10px 0;
+    margin-bottom: 10px;
+}
+
+.stripImgContainer {
+    position: relative;
+    width: 60px;
+    height: 60px;
+    flex-shrink: 0;
+}
+
+.stripImgContainer img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.removeImgBtn {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background: #ff4444;
+    color: #fff;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+}
+
+.colorBubbles {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.colorBubble {
+    padding: 6px 15px;
+    border-radius: 20px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #fff;
+    font-size: 0.7rem;
+    font-weight: 800;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.colorBubble:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.colorBubbleActive {
+    background: var(--primary) !important;
+    color: #000 !important;
+    border-color: var(--primary) !important;
+}
+
+.imageGridPreview {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    margin-bottom: 15px;
+    max-height: 250px;
+    overflow-y: auto;
+}
+
+.imageGridPreview img {
+    width: 100%;
+    height: 120px;
+    object-fit: cover;
+    border-radius: 10px;
+}

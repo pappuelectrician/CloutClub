@@ -7,7 +7,7 @@ import { CreditCard, Truck, CheckCircle, Search, Zap, ArrowLeft } from 'lucide-r
 import styles from './Checkout.module.css';
 
 export default function CheckoutPage() {
-    const { cart, cartTotal, clearCart } = useCart();
+    const { cart, cartTotal, clearCart, applyDiscount, discount } = useCart();
     const [step, setStep] = useState(1);
     const [config, setConfig] = useState<any>(null);
     const [formData, setFormData] = useState({
@@ -20,6 +20,8 @@ export default function CheckoutPage() {
         phone: '',
     });
     const [isAutoFilled, setIsAutoFilled] = useState(false);
+    const [promoCode, setPromoCode] = useState('');
+    const [promoStatus, setPromoStatus] = useState<{ type: 'success' | 'error', message: string } | null>(null);
 
     useEffect(() => {
         fetch('/api/config').then(res => res.json()).then(data => setConfig(data));
@@ -55,6 +57,16 @@ export default function CheckoutPage() {
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
         if (isAutoFilled) setIsAutoFilled(false);
+    };
+
+    const handleApplyPromo = () => {
+        if (!promoCode) return;
+        const success = applyDiscount(promoCode);
+        if (success) {
+            setPromoStatus({ type: 'success', message: 'CLOUT APPLIED!' });
+        } else {
+            setPromoStatus({ type: 'error', message: 'INVALID CODE' });
+        }
     };
 
     const nextStep = () => setStep(step + 1);
@@ -290,9 +302,35 @@ export default function CheckoutPage() {
                                 </div>
                             ))}
                         </div>
+                        <div className={styles.promoSection}>
+                            <div className={styles.promoInputRow}>
+                                <input
+                                    type="text"
+                                    placeholder="PROMO CODE"
+                                    value={promoCode}
+                                    onChange={(e) => setPromoCode(e.target.value.toUpperCase())}
+                                />
+                                <button onClick={handleApplyPromo}>APPLY</button>
+                            </div>
+                            {promoStatus && (
+                                <p className={promoStatus.type === 'success' ? styles.promoSuccess : styles.promoError}>
+                                    {promoStatus.message}
+                                </p>
+                            )}
+                        </div>
                         <div className={styles.divider}></div>
                         <div className={styles.totalRow}>
-                            <span>TOTAL</span>
+                            <span>SUBTOTAL</span>
+                            <span>₹{cart.reduce((acc, i) => acc + i.price * i.quantity, 0)}</span>
+                        </div>
+                        {discount > 0 && (
+                            <div className={styles.totalRow} style={{ color: 'var(--primary)', fontSize: '0.8rem' }}>
+                                <span>DISCOUNT</span>
+                                <span>-₹{discount}</span>
+                            </div>
+                        )}
+                        <div className={styles.totalRowLarge}>
+                            <span>FINAL TOTAL</span>
                             <span>₹{cartTotal}</span>
                         </div>
                     </div>

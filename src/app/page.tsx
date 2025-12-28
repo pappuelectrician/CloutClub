@@ -5,6 +5,7 @@ import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion'
 import { ArrowRight, Zap, Shield, Truck, Flame, Crown, Mail, Phone } from 'lucide-react';
 import Link from 'next/link';
 import styles from './Home.module.css';
+import ProductCard from '@/components/shop/ProductCard';
 
 export default function Home() {
   const { scrollY } = useScroll();
@@ -31,11 +32,6 @@ export default function Home() {
 
   return (
     <>
-      {config.promo.active && (
-        <div className={styles.promoBanner}>
-          <Zap size={14} fill="currentColor" /> {config.promo.bannerText}
-        </div>
-      )}
       <div className={styles.container}>
         {/* Hero Section */}
         <section className={styles.hero}>
@@ -127,26 +123,7 @@ export default function Home() {
             </div>
             <div className={styles.trendingGrid}>
               {[...trendingItems, ...limitedItems].map((item, idx) => (
-                <motion.div
-                  key={item.id}
-                  className={styles.trendingCard}
-                  initial={{ opacity: 0, y: 30 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  transition={{ delay: idx * 0.1 }}
-                >
-                  <div className={styles.itemImageContainer}>
-                    {item.isTrending && <div className={styles.trendingRibbon}><Flame size={12} /> TRENDING</div>}
-                    {item.isLimited && !item.isTrending && <div className={styles.limitedTag}><Crown size={12} /> LIMITED</div>}
-                    <img src={item.images?.[0]} alt={item.name} />
-                  </div>
-                  <div className={styles.itemInfo}>
-                    <h4>{item.name}</h4>
-                    <span className={styles.itemPrice}>₹{item.price}</span>
-                    <Link href={`/${item.category.toLowerCase()}`} className={styles.viewItemBtn}>
-                      VIEW DROP
-                    </Link>
-                  </div>
-                </motion.div>
+                <ProductCard key={item.id} product={item} />
               ))}
             </div>
           </section>
