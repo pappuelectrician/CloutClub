@@ -20,7 +20,7 @@
     font-weight: 900;
     letter-spacing: -0.05em;
     margin-bottom: 20px;
-    background: linear-gradient(45deg, #00f2ff, #7000ff, #00f2ff);
+    background: linear-gradient(45deg, #4dade8, #a78bfa, #4dade8);
     background-size: 200% auto;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -294,7 +294,7 @@
 
 .submitBtn:hover {
     transform: translateY(-2px);
-    box-shadow: 0 10px 20px rgba(0, 242, 255, 0.3);
+    box-shadow: 0 10px 20px rgba(77, 173, 232, 0.3);
 }
 
 .submitBtn:disabled {

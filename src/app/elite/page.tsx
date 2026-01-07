@@ -200,7 +200,7 @@ export default function ElitePage() {
 
                             {submitted ? (
                                 <div style={{ textAlign: 'center', padding: '20px 0' }}>
-                                    <CheckCircle size={80} color="#00f2ff" style={{ marginBottom: '20px' }} />
+                                    <CheckCircle size={80} color="#4dade8" style={{ marginBottom: '20px' }} />
                                     <h2>REQUEST SENT</h2>
                                     <p>Our team will review your application and contact you soon.</p>
                                 </div>
