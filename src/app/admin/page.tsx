@@ -312,9 +312,9 @@ export default function AdminPage() {
     };
 
     const handleAddProduct = async () => {
-        const { name, price, imageUrl } = newProduct;
-        if (!name.trim() || !price || !imageUrl) {
-            showToast('Please fill Name, Price, and Image URL', 'error');
+        const { name, price, images } = newProduct;
+        if (!name.trim() || !price || images.length === 0) {
+            showToast('Please fill Name, Price, and add at least one Image', 'error');
             return;
         }
 
@@ -334,7 +334,7 @@ export default function AdminPage() {
                 setIsAddModalOpen(false);
                 setNewProduct({
                     name: '', category: 'Hoodies', price: '', stock: '',
-                    sizes: 'S, M, L, XL', description: '', imageUrl: '',
+                    sizes: 'S, M, L, XL', description: '', images: [], colors: [],
                     isTrending: false, isLimited: false
                 });
                 fetchData();
@@ -1347,7 +1347,7 @@ export default function AdminPage() {
                                                     onClick={() => {
                                                         const current = Array.isArray(editingProduct.colors) ? editingProduct.colors : [];
                                                         const next = current.includes(color)
-                                                            ? current.filter(c => c !== color)
+                                                            ? current.filter((c: string) => c !== color)
                                                             : [...current, color];
                                                         setEditingProduct({ ...editingProduct, colors: next });
                                                     }}
@@ -1360,10 +1360,10 @@ export default function AdminPage() {
                                             type="text"
                                             placeholder="CUSTOM COLORS (COMMA SEPARATED)"
                                             style={{ marginTop: 10 }}
-                                            value={Array.isArray(editingProduct.colors) ? editingProduct.colors.filter(c => !['BLACK', 'WHITE', 'CHARCOAL', 'NEON GREEN', 'ELECTRIC BLUE', 'CYBER PINK', 'RED', 'ORANGE'].includes(c)).join(', ') : ''}
+                                            value={Array.isArray(editingProduct.colors) ? editingProduct.colors.filter((c: string) => !['BLACK', 'WHITE', 'CHARCOAL', 'NEON GREEN', 'ELECTRIC BLUE', 'CYBER PINK', 'RED', 'ORANGE'].includes(c)).join(', ') : ''}
                                             onChange={(e) => {
                                                 const custom = e.target.value.split(',').map(s => s.trim()).filter(Boolean);
-                                                const presets = Array.isArray(editingProduct.colors) ? editingProduct.colors.filter(c => ['BLACK', 'WHITE', 'CHARCOAL', 'NEON GREEN', 'ELECTRIC BLUE', 'CYBER PINK', 'RED', 'ORANGE'].includes(c)) : [];
+                                                const presets = Array.isArray(editingProduct.colors) ? editingProduct.colors.filter((c: string) => ['BLACK', 'WHITE', 'CHARCOAL', 'NEON GREEN', 'ELECTRIC BLUE', 'CYBER PINK', 'RED', 'ORANGE'].includes(c)) : [];
                                                 setEditingProduct({ ...editingProduct, colors: [...presets, ...custom] });
                                             }}
                                         />

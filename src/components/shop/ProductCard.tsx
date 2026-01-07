@@ -17,7 +17,7 @@ interface Product {
     description: string;
     images: string[];
     sizes: string;
-    colors: string[];
+    colors: string[] | string;
     stock: number;
     isTrending?: boolean;
     isLimited?: boolean;

@@ -28,7 +28,7 @@ export default function ProductDetail() {
             if (p) {
                 const colors = Array.isArray(p.colors)
                     ? p.colors
-                    : (typeof p.colors === 'string' ? p.colors.split(',').map(c => c.trim()) : []);
+                    : (typeof p.colors === 'string' ? p.colors.split(',').map((c: string) => c.trim()) : []);
 
                 const sizes = p.sizes?.split(',').map((s: string) => s.trim()) || [];
 
