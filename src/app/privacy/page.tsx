@@ -1,0 +1,15 @@
+import React from 'react';
+
+export const metadata = {
+    title: 'Privacy Policy',
+    description: 'Privacy policy for Clout Club.'
+};
+
+export default function PrivacyPage() {
+    return (
+        <div style={{ paddingTop: '150px', paddingBottom: '100px', paddingLeft: '5%', paddingRight: '5%', minHeight: '100vh', background: 'var(--background)' }}>
+            <h1 style={{ fontSize: '2.5rem', marginBottom: '20px' }}>Privacy Policy</h1>
+            <p style={{ opacity: 0.8, lineHeight: '1.6' }}>Placeholder text for Privacy Policy. Replace this with the actual legal content.</p>
+        </div>
+    );
+}

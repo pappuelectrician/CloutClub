@@ -351,6 +351,20 @@
     margin-bottom: 10px;
 }
 
+/* New legal column */
+.footerLegal {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.footerLegal h3 {
+    font-size: 0.8rem;
+    letter-spacing: 0.2em;
+    opacity: 0.5;
+    margin-bottom: 10px;
+}
+
 .contactItem {
     display: flex;
     align-items: center;

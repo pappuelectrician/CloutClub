@@ -165,6 +165,16 @@ export default function Home() {
                 <Phone size={16} /> +91 831-0785221
               </a>
             </div>
+            <div className={styles.footerLegal}>
+              <h3>LEGAL</h3>
+              <Link href="/terms" className={styles.contactItem}>Terms &amp; Conditions</Link>
+              <Link href="/privacy" className={styles.contactItem}>Privacy Policy</Link>
+              <Link href="/return-refund" className={styles.contactItem}>Return &amp; Refund</Link>
+              <Link href="/cancellation" className={styles.contactItem}>Cancellation Policy</Link>
+              <Link href="/shipping" className={styles.contactItem}>Shipping Policy</Link>
+              <Link href="/about" className={styles.contactItem}>About Us</Link>
+              <Link href="/contact" className={styles.contactItem}>Contact Us</Link>
+            </div>
             <div className={styles.footerCopyright}>
               <p>{config.footer.copyright}</p>
             </div>
